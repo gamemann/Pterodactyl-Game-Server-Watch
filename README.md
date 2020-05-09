@@ -1,4 +1,4 @@
-# GFL-Watch
+# Pterodactyl Game Server Watch
 
 ## Description
 A tool programmed in Go to automatically restart 'hung' game servers/containers via a Pterodactyl API. This only supports game servers that respond to the A2S_INFO query (a Valve Master Server query).
