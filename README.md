@@ -54,5 +54,14 @@ Here's an configuration example in JSON:
 }
 ```
 
+## Building
+You may use `git` and `go build` to build this project and produce a binary. Example:
+
+```
+git clone https://github.com/gamemann/Pterodactyl-Game-Server-Watch.git
+cd Pterodactyl-Game-Server-Watch/src
+go build
+```
+
 ## Credits
 * [Christian Deacon](https://www.linkedin.com/in/christian-deacon-902042186/) - Creator.
