@@ -1,0 +1,12 @@
+{
+        "apiURL": "https://panel.mydomain.com",
+        "token": "12345",
+
+        "servers": [
+                {
+                        "IP": "172.20.0.10",
+                        "port": 27015,
+                        "uid": "testingUID"
+                }
+        ]
+}
