@@ -39,9 +39,9 @@ func SendRequest(conn *net.UDPConn) {
 
 // Checks for A2S_INFO response. Returns true if it receives a response. Returns false otherwise.
 func CheckResponse(conn *net.UDPConn) bool {
-	fmt.Println("Attempting to wait for UDP socket.")
 	buffer := make([]byte, 256)
 
+	// Set read timeout (1 second).
 	conn.SetReadDeadline(time.Now().Add(time.Second))
 
 	_, _, err := conn.ReadFromUDP(buffer)

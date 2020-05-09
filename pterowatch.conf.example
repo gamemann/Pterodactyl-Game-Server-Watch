@@ -1,13 +1,27 @@
 {
         "apiURL": "https://panel.mydomain.com",
         "token": "12345",
-        "scantime": 5
 
         "servers": [
                 {
+                        "enable": true,
                         "IP": "172.20.0.10",
                         "port": 27015,
-                        "uid": "testingUID"
+                        "uid": "testingUID",
+                        "scantime": 5,
+                        "maxfails": 5,
+                        "maxrestarts": 1,
+                        "restartint": 120
+                },
+                {
+                        "enable": true,
+                        "IP": "172.20.0.11",
+                        "port": 27015,
+                        "uid": "testingUID2",
+                        "scantime": 5,
+                        "maxfails": 10,
+                        "maxrestarts": 2,
+                        "restartint": 120
                 }
         ]
 }

@@ -8,10 +8,14 @@ import (
 
 // Server struct used for each server config.
 type Server struct {
-	IP       string `json:"IP"`
-	Port     int    `json:"port"`
-	UID      string `json:"uid"`
-	ScanTime int    `json:"scantime"`
+	Enable      bool   `json:"enable"`
+	IP          string `json:"IP"`
+	Port        int    `json:"port"`
+	UID         string `json:"uid"`
+	ScanTime    int    `json:"scantime"`
+	MaxFails    int    `json:"maxfails"`
+	MaxRestarts int    `json:"maxrestarts"`
+	RestartInt  int    `json:"restartint"`
 }
 
 // Config struct used for the general config.
