@@ -1,6 +1,7 @@
 {
         "apiURL": "https://panel.mydomain.com",
         "token": "12345",
+        "scantime": 5
 
         "servers": [
                 {

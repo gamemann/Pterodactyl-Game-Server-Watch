@@ -8,6 +8,7 @@ The config file's default path is `/etc/gflwatch/gflwatch.conf`. This should be 
 
 * `apiURL` => The Pterodactyl API URL.
 * `token` => The bearer token to use when sending HTTP POST requests to the Pterodactyl API.
+* `scantime` => How often to scan a game server/container.
 * `servers` => An array of servers to check against (read below).
 
 The `servers` array should contain the following members:
