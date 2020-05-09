@@ -8,17 +8,17 @@ import (
 
 // Server struct used for each server config.
 type Server struct {
-	IP   string `json:"IP"`
-	Port int    `json:"port"`
-	UID  string `json:"uid"`
+	IP       string `json:"IP"`
+	Port     int    `json:"port"`
+	UID      string `json:"uid"`
+	ScanTime string `json:"scantime"`
 }
 
 // Config struct used for the general config.
 type Config struct {
-	APIURL   string   `json:"apiURL"`
-	Token    string   `json:"token"`
-	ScanTime string   `json:"scantime"`
-	Servers  []Server `json:"servers"`
+	APIURL  string   `json:"apiURL"`
+	Token   string   `json:"token"`
+	Servers []Server `json:"servers"`
 }
 
 // Reads a config file based off of the file name (string) and returns a Config struct.
