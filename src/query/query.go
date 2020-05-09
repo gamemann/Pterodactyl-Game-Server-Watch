@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"strconv"
+	"time"
 )
 
 // The A2S_INFO request.
@@ -14,13 +16,10 @@ func CreateConnection(host string, port int) (*net.UDPConn, error) {
 	var UDPC *net.UDPConn
 
 	// Combine host and port.
-	fullHost := host + ":" + string(port)
-
-	// Create dialer with one second timeout.
-	d := net.Dialer{Timeout: 1}
+	fullHost := host + ":" + strconv.Itoa(port)
 
 	// Attempt to open a UDP connection.
-	conn, err := d.Dial("udp4", fullHost)
+	conn, err := net.Dial("udp", fullHost)
 
 	if err != nil {
 		fmt.Println(err)
@@ -40,7 +39,10 @@ func SendRequest(conn *net.UDPConn) {
 
 // Checks for A2S_INFO response. Returns true if it receives a response. Returns false otherwise.
 func CheckResponse(conn *net.UDPConn) bool {
+	fmt.Println("Attempting to wait for UDP socket.")
 	buffer := make([]byte, 256)
+
+	conn.SetReadDeadline(time.Now().Add(time.Second))
 
 	_, _, err := conn.ReadFromUDP(buffer)
 
