@@ -13,8 +13,8 @@ The config file's default path is `/etc/pterowatch/pterowatch.conf`. This should
 The `servers` array should contain the following members:
 
 * `enable` => If true, this server will be scanned.
-* `IP` => The IP to send A2S_INFO requests to.
-* `port` => The port to send the A2S_INFO requests to.
+* `ip` => The IP to send A2S_INFO requests to.
+* `port` => The port to send A2S_INFO requests to.
 * `uid` => The server's Pterodactyl UID.
 * `scantime` => How often to scan a game server/container in seconds.
 * `maxfails` => The maximum amount of A2S_INFO response failures before attempting to restart the game server/container.
@@ -32,7 +32,7 @@ Here's an configuration example in JSON:
         "servers": [
                 {
                         "enable": true,
-                        "IP": "172.20.0.10",
+                        "ip": "172.20.0.10",
                         "port": 27015,
                         "uid": "testingUID",
                         "scantime": 5,
@@ -42,7 +42,7 @@ Here's an configuration example in JSON:
                 },
                 {
                         "enable": true,
-                        "IP": "172.20.0.11",
+                        "ip": "172.20.0.11",
                         "port": 27015,
                         "uid": "testingUID2",
                         "scantime": 5,
