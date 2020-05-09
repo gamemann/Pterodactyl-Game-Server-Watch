@@ -11,7 +11,7 @@ type Server struct {
 	IP       string `json:"IP"`
 	Port     int    `json:"port"`
 	UID      string `json:"uid"`
-	ScanTime string `json:"scantime"`
+	ScanTime int    `json:"scantime"`
 }
 
 // Config struct used for the general config.
