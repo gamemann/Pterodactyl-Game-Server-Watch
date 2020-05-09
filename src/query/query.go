@@ -16,23 +16,19 @@ func CreateConnection(host string, port int) (*net.UDPConn, error) {
 	// Combine host and port.
 	fullHost := host + ":" + string(port)
 
-	// Resolve host name if any. Otherwise, use IP.
-	ip, err := net.ResolveUDPAddr("udp4", fullHost)
-
-	if err != nil {
-		fmt.Println(err)
-
-		return UDPC, errors.New("NoResolve")
-	}
+	// Create dialer with one second timeout.
+	d := net.Dialer{Timeout: 1}
 
 	// Attempt to open a UDP connection.
-	UDPC, err = net.DialUDP("udp4", nil, ip)
+	conn, err := d.Dial("udp4", fullHost)
 
 	if err != nil {
 		fmt.Println(err)
 
 		return UDPC, errors.New("NoConnection")
 	}
+
+	UDPC, _ = conn.(*net.UDPConn)
 
 	return UDPC, nil
 }
