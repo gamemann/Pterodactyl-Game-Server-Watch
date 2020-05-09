@@ -54,8 +54,5 @@ Here's an configuration example in JSON:
 }
 ```
 
-## Status
-Not finished.
-
 ## Credits
 * [Christian Deacon](https://www.linkedin.com/in/christian-deacon-902042186/) - Creator.
