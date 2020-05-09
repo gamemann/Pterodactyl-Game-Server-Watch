@@ -2,6 +2,7 @@ package main
 
 import (
 	"./config"
+	"./pterodactyl"
 	"./query"
 	"fmt"
 	"net"
@@ -13,7 +14,7 @@ import (
 )
 
 // Timer function.
-func ServerWatch(server config.Server, timer *time.Ticker, fails *int, restarts *int, nextscan *int64, conn *net.UDPConn) {
+func ServerWatch(server config.Server, timer *time.Ticker, fails *int, restarts *int, nextscan *int64, conn *net.UDPConn, apiURL string, apiToken string) {
 	destroy := make(chan struct{})
 
 	for {
@@ -29,21 +30,33 @@ func ServerWatch(server config.Server, timer *time.Ticker, fails *int, restarts 
 
 				// Check to see if we want to restart the server.
 				if *fails >= server.MaxFails && *restarts < server.MaxRestarts && *nextscan < time.Now().Unix() {
-					// <Pterodactyl check and restart code>...
+
+					// Check if container status is 'on'.
+					if !pterodactyl.CheckStatus(apiURL, apiToken, server.UID) {
+						continue
+					}
+
+					// Attempt to kill container.
+					pterodactyl.KillServer(apiURL, apiToken, server.UID)
+
+					// Now attempt to start it again.
+					pterodactyl.StartServer(apiURL, apiToken, server.UID)
 
 					// Increment restarts count.
 					*restarts++
 
-					// Set next scan time.
+					// Set next scan time and ensure the restart interval is at least 1.
 					restartint := server.RestartInt
 
 					if restartint < 1 {
 						restartint = 120
 					}
 
+					// Get new scan time.
 					*nextscan = time.Now().Unix() + int64(restartint)
 
-					fmt.Println(server.IP + ":" + strconv.Itoa(server.Port) + " was found down. Attempting to restart. Fail Count => " + strconv.Itoa(*fails) + ". Restart Count => " + strconv.Itoa(*restarts) + ". Next scan time => " + strconv.FormatInt(*nextscan, 10))
+					// Debug.
+					fmt.Println(server.IP + ":" + strconv.Itoa(server.Port) + " was found down. Attempting to restart. Fail Count => " + strconv.Itoa(*fails) + ". Restart Count => " + strconv.Itoa(*restarts) + ".")
 				}
 			} else {
 				// Reset everything.
@@ -102,7 +115,7 @@ func main() {
 
 		// Create repeating timer.
 		ticker := time.NewTicker(time.Duration(stime) * time.Second)
-		go ServerWatch(cfg.Servers[i], ticker, &fails, &restarts, &nextscan, conn)
+		go ServerWatch(cfg.Servers[i], ticker, &fails, &restarts, &nextscan, conn, cfg.APIURL, cfg.Token)
 	}
 
 	// Signal.
