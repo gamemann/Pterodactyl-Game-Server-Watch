@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	configFile := "/etc/gflwatch/gflwatch.conf"
+	configFile := "/etc/pterowatch/pterowatch.conf"
 
 	cfg := config.Config{}
 
