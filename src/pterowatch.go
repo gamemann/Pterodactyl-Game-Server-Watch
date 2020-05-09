@@ -3,6 +3,7 @@ package main
 import (
 	"./config"
 	"fmt"
+	"time"
 )
 
 func main() {
@@ -12,5 +13,7 @@ func main() {
 
 	config.ReadConfig(&cfg, configFile)
 
-	fmt.Println(cfg)
+	for i := 0; i < len(cfg.Servers); i++ {
+		fmt.Println(cfg.Servers[i].IP)
+	}
 }
