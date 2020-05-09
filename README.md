@@ -1,7 +1,7 @@
 # Pterodactyl Game Server Watch
 
 ## Description
-A tool programmed in Go to automatically restart 'hung' game servers/containers via a Pterodactyl API. This only supports game servers that respond to the [A2S_INFO](https://developer.valvesoftware.com/wiki/Server_queries#A2S_INFO) query (a Valve Master Server query).
+A tool programmed in Go to automatically restart 'hung' game servers/containers via a Pterodactyl API (version 0.7). This only supports game servers that respond to the [A2S_INFO](https://developer.valvesoftware.com/wiki/Server_queries#A2S_INFO) query (a Valve Master Server query).
 
 ## Config File
 The config file's default path is `/etc/pterowatch/pterowatch.conf`. This should be a JSON array including the API URL, token, and an array of servers to check against. The main options are the following:
