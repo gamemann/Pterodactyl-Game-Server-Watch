@@ -82,7 +82,7 @@ func AddServers(cfg *config.Config) bool {
 			var sta config.Server
 
 			sta.Enable = true
-			sta.UID = attr["uuid"].(string)
+			sta.UID = attr["identifier"].(string)
 			sta.ScanTime = 5
 			sta.MaxFails = 10
 			sta.MaxRestarts = 2
