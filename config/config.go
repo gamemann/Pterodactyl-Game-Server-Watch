@@ -20,7 +20,7 @@ type Server struct {
 
 // Config struct used for the general config.
 type Config struct {
-	APIURL     string   `json:"apiURL"`
+	APIURL     string   `json:"apiurl"`
 	Token      string   `json:"token"`
 	AddServers bool     `json:"addservers"`
 	Servers    []Server `json:"servers"`
