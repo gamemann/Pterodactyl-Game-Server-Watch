@@ -8,6 +8,7 @@ The config file's default path is `/etc/pterowatch/pterowatch.conf`. This should
 
 * `apiURL` => The Pterodactyl API URL.
 * `token` => The bearer token to use when sending HTTP POST requests to the Pterodactyl API.
+* `addservers` => Automatically add servers from Pterodactyl API (as of right now, it uses default values below).
 * `servers` => An array of servers to check against (read below).
 
 The `servers` array should contain the following members:
