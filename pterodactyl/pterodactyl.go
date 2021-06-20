@@ -12,12 +12,12 @@ import (
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/config"
 )
 
-// Attributes struct from /api/client/servers/xxxx/utilization.
+// Attributes struct from /api/client/servers/xxxx/resources.
 type Attributes struct {
-	State string `json:"state"`
+	State string `json:"current_state"`
 }
 
-// Utilization struct from /api/client/servers/xxxx/utilization.
+// Utilization struct from /api/client/servers/xxxx/resources.
 type Utilization struct {
 	Attributes Attributes `json:"attributes"`
 }
@@ -116,7 +116,7 @@ func AddServers(cfg *config.Config) bool {
 // Checks the status of a Pterodactyl server. Returns true if on and false if off.
 func CheckStatus(apiURL string, apiToken string, uid string) bool {
 	// Build endpoint.
-	urlstr := apiURL + "/" + "api/client/servers/" + uid + "/" + "utilization"
+	urlstr := apiURL + "/" + "api/client/servers/" + uid + "/resources"
 
 	// Setup HTTP GET request.
 	client := &http.Client{Timeout: time.Second * 5}
@@ -125,8 +125,11 @@ func CheckStatus(apiURL string, apiToken string, uid string) bool {
 	// Set authorization header.
 	req.Header.Set("Authorization", "Bearer "+apiToken)
 
-	// Allow Pterodactyl header.
-	req.Header.Set("Accept", "Application/vnd.pterodactyl.v1+json")
+	// Set data to JSON.
+	req.Header.Set("Content-Type", "application/json")
+
+	// Accept JSON.
+	req.Header.Set("Accept", "application/json")
 
 	// Perform HTTP request and check for errors.
 	resp, err := client.Do(req)
@@ -179,8 +182,11 @@ func KillServer(apiURL string, apiToken string, uid string) {
 	// Set authorization header.
 	req.Header.Set("Authorization", "Bearer "+apiToken)
 
-	// Set data type to JSON.
+	// Set data to JSON.
 	req.Header.Set("Content-Type", "application/json")
+
+	// Accept JSON.
+	req.Header.Set("Accept", "application/json")
 
 	// Perform HTTP request and check for errors.
 	resp, err := client.Do(req)
@@ -208,8 +214,11 @@ func StartServer(apiURL string, apiToken string, uid string) {
 	// Set authorization header.
 	req.Header.Set("Authorization", "Bearer "+apiToken)
 
-	// Set data type to JSON.
+	// Set data to JSON.
 	req.Header.Set("Content-Type", "application/json")
+
+	// Accept JSON.
+	req.Header.Set("Accept", "application/json")
 
 	// Perform HTTP request and check for errors.
 	resp, err := client.Do(req)
