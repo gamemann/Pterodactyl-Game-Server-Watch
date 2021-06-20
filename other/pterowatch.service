@@ -1,0 +1,11 @@
+[Unit]
+Description=Pterodatcyl server watch.
+After=network-online.target
+Requires=network-online.target
+
+[Service]
+ExecStart=/path/to/pterowatchbinary
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
