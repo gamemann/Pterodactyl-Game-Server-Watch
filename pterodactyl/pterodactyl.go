@@ -159,7 +159,7 @@ func CheckStatus(apiURL string, apiToken string, uid string) bool {
 	json.Unmarshal([]byte(string(body)), &util)
 
 	// Check if the server's state isn't on. If not, return false.
-	if util.Attributes.State != "on" {
+	if util.Attributes.State != "running" {
 		return false
 	}
 
