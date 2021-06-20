@@ -1,9 +1,6 @@
 package main
 
 import (
-	"./config"
-	"./pterodactyl"
-	"./query"
 	"fmt"
 	"net"
 	"os"
@@ -11,6 +8,10 @@ import (
 	"strconv"
 	"syscall"
 	"time"
+
+	"github.com/gamemann/Pterodactyl-Game-Server-Watch/config"
+	"github.com/gamemann/Pterodactyl-Game-Server-Watch/pterodactyl"
+	"github.com/gamemann/Pterodactyl-Game-Server-Watch/query"
 )
 
 // Timer function.
@@ -83,6 +84,11 @@ func main() {
 
 	// Attempt to read config.
 	config.ReadConfig(&cfg, configFile)
+
+	// Check if we want to automatically add servers.
+	if cfg.AddServers {
+		pterodactyl.AddServers(&cfg)
+	}
 
 	// Loop through each container from the config.
 	for i := 0; i < len(cfg.Servers); i++ {
