@@ -1,5 +1,5 @@
 [Unit]
-Description=Pterodatcyl server watch.
+Description=pterodactyl server watch.
 After=network-online.target
 Requires=network-online.target
 
