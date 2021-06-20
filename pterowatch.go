@@ -21,21 +21,28 @@ func ServerWatch(server config.Server, timer *time.Ticker, fails *int, restarts 
 	for {
 		select {
 		case <-timer.C:
+
+			// Check if container status is 'on'.
+			if !pterodactyl.CheckStatus(apiURL, apiToken, server.UID) {
+
+				continue
+			}
+
 			// Send A2S_INFO request.
 			query.SendRequest(conn)
+
+			//fmt.Println("[" + server.IP + ":" + strconv.Itoa(server.Port) + "] A2S_INFO sent.")
 
 			// Check for response. If no response, increase fail count. Otherwise, reset fail count to 0.
 			if !query.CheckResponse(conn) {
 				// Increase fail count.
 				*fails++
 
+				//fmt.Println("[" + server.IP + ":" + strconv.Itoa(server.Port) + "] Fails => " + strconv.Itoa(*fails))
+
 				// Check to see if we want to restart the server.
 				if *fails >= server.MaxFails && *restarts < server.MaxRestarts && *nextscan < time.Now().Unix() {
-
-					// Check if container status is 'on'.
-					if !pterodactyl.CheckStatus(apiURL, apiToken, server.UID) {
-						continue
-					}
+					//fmt.Println("[" + server.IP + ":" + strconv.Itoa(server.Port) + "] Fails exceeded.")
 
 					// Attempt to kill container.
 					pterodactyl.KillServer(apiURL, apiToken, server.UID)
