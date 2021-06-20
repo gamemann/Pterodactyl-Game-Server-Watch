@@ -28,6 +28,7 @@ Here's an configuration example in JSON:
 {
         "apiURL": "https://panel.mydomain.com",
         "token": "12345",
+        "addservers": true,
 
         "servers": [
                 {
