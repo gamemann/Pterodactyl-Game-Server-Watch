@@ -102,10 +102,71 @@ func AddServers(cfg *config.Config) bool {
 				}
 			}
 
+			// Look for overrides.
+			if attr["relationships"].(map[string]interface{})["variables"].(map[string]interface{})["data"] != nil {
+				for _, i := range attr["relationships"].(map[string]interface{})["variables"].(map[string]interface{})["data"].([]interface{}) {
+					if i.(map[string]interface{})["object"].(string) != "egg_variable" {
+						continue
+					}
+
+					vari := i.(map[string]interface{})["attributes"].(map[string]interface{})
+
+					// Check if we have a value.
+					if vari["server_value"] == nil {
+						continue
+					}
+
+					val := vari["server_value"].(string)
+
+					// Override variables should always be at least one byte in length.
+					if len(val) < 1 {
+						continue
+					}
+
+					// Check for IP override.
+					if vari["env_variable"].(string) == "PTEROWATCH_IP" {
+						sta.IP = val
+					}
+
+					// Check for port override.
+					if vari["env_variable"].(string) == "PTEROWATCH_PORT" {
+						sta.Port, _ = strconv.Atoi(val)
+					}
+
+					// Check for scan override.
+					if vari["env_variable"].(string) == "PTEROWATCH_SCANTIME" {
+						sta.ScanTime, _ = strconv.Atoi(val)
+					}
+
+					// Check for max fails override.
+					if vari["env_variable"].(string) == "PTEROWATCH_MAXFAILS" {
+						sta.MaxFails, _ = strconv.Atoi(val)
+					}
+
+					// Check for max restarts override.
+					if vari["env_variable"].(string) == "PTEROWATCH_MAXRESTARTS" {
+						sta.MaxRestarts, _ = strconv.Atoi(val)
+					}
+
+					// Check for restart interval override.
+					if vari["env_variable"].(string) == "PTEROWATCH_RETARTINT" {
+						sta.RestartInt, _ = strconv.Atoi(val)
+					}
+
+					// Check for disable override.
+					if vari["env_variable"].(string) == "PTEROWATCH_DISABLE" {
+						disable, _ := strconv.Atoi(val)
+
+						if disable > 0 {
+							sta.Enable = false
+						}
+					}
+				}
+			}
 			// Append to servers slice.
 			cfg.Servers = append(cfg.Servers, sta)
 
-			fmt.Println("[API] Adding server " + sta.IP + ":" + strconv.Itoa(sta.Port) + " with UID " + sta.UID)
+			fmt.Println("[API] Adding server " + sta.IP + ":" + strconv.Itoa(sta.Port) + " with UID " + sta.UID + ". Scan time => " + strconv.Itoa(sta.ScanTime) + ". Max Fails => " + strconv.Itoa(sta.MaxFails) + ". Max Restarts => " + strconv.Itoa(sta.MaxRestarts) + ". Restart Interval => " + strconv.Itoa(sta.RestartInt) + ". Enabled => " + strconv.FormatBool(sta.Enable) + ".")
 		}
 	}
 
