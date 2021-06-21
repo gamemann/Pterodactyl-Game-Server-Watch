@@ -76,6 +76,7 @@ The following strings are replaced inside of the `contents` string before the we
 * `{MAXRESTARTS}` => The server's configured max restarts.
 * `{UID}` => The server's UID from the config file/Pterodactyl API.
 * `{SCANTIME}` => The server's configured scan time.
+* `{RESTARTINT}` => The server's configured restart interval.
 
 #### Defaults
 Here are the Discord web hook's default values.
