@@ -118,7 +118,7 @@ Here's an configuration example in JSON:
 }
 ```
 
-You may find other config examples in the [tests/](https://github.com/gamemann/Pterodactyl-Game-Server-Watch) directory.
+You may find other config examples in the [tests/](https://github.com/gamemann/Pterodactyl-Game-Server-Watch/tests) directory.
 
 ## Building
 You may use `git` and `go build` to build this project and produce a binary. I'd suggest cloning this to `$GOPATH` so there aren't problems with linking modules. For example:
