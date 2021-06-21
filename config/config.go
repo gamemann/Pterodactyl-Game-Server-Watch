@@ -18,12 +18,19 @@ type Server struct {
 	RestartInt  int    `json:"restartint"`
 }
 
+// Misc options.
+type Misc struct {
+	Type string        `json:"type"`
+	Data []interface{} `json:"data"`
+}
+
 // Config struct used for the general config.
 type Config struct {
 	APIURL     string   `json:"apiurl"`
 	Token      string   `json:"token"`
 	AddServers bool     `json:"addservers"`
 	Servers    []Server `json:"servers"`
+	Misc       Misc     `json:"misc"`
 }
 
 // Reads a config file based off of the file name (string) and returns a Config struct.
