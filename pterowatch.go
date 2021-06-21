@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
-	"strings"
 	"syscall"
 	"time"
 
@@ -26,7 +25,7 @@ func ServerWatch(srvidx int, timer *time.Ticker, fails *int, restarts *int, next
 			srv := cfg.Servers[srvidx]
 
 			// Check if container status is 'on'.
-			if !pterodactyl.CheckStatus(cfg.APIURL, cfg.Token, srv.UID) {
+			if !pterodactyl.CheckStatus(cfg, srv.UID) {
 
 				continue
 			}
@@ -49,10 +48,10 @@ func ServerWatch(srvidx int, timer *time.Ticker, fails *int, restarts *int, next
 				// Check to see if we want to restart the server.
 				if *fails >= srv.MaxFails && *restarts < srv.MaxRestarts && *nextscan < time.Now().Unix() {
 					// Attempt to kill container.
-					pterodactyl.KillServer(cfg.APIURL, cfg.Token, srv.UID)
+					pterodactyl.KillServer(cfg, srv.UID)
 
 					// Now attempt to start it again.
-					pterodactyl.StartServer(cfg.APIURL, cfg.Token, srv.UID)
+					pterodactyl.StartServer(cfg, srv.UID)
 
 					// Increment restarts count.
 					*restarts++
@@ -125,14 +124,7 @@ func ServerWatch(srvidx int, timer *time.Ticker, fails *int, restarts *int, next
 
 								// Replace variables in strings.
 								contents := contentpre
-								contents = strings.ReplaceAll(contents, "{IP}", srv.IP)
-								contents = strings.ReplaceAll(contents, "{PORT}", strconv.Itoa(srv.Port))
-								contents = strings.ReplaceAll(contents, "{FAILS}", strconv.Itoa(*fails))
-								contents = strings.ReplaceAll(contents, "{RESTARTS}", strconv.Itoa(*restarts))
-								contents = strings.ReplaceAll(contents, "{MAXFAILS}", strconv.Itoa(srv.MaxFails))
-								contents = strings.ReplaceAll(contents, "{MAXRESTARTS}", strconv.Itoa(srv.MaxRestarts))
-								contents = strings.ReplaceAll(contents, "{UID}", srv.UID)
-								contents = strings.ReplaceAll(contents, "{SCANTIME}", strconv.Itoa(srv.ScanTime))
+								misc.FormatContents(&contents, *fails, *restarts, &srv)
 
 								// Level 3 debug.
 								if cfg.DebugLevel > 2 {

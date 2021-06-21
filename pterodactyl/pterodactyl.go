@@ -176,16 +176,16 @@ func AddServers(cfg *config.Config) bool {
 
 // Checks the status of a Pterodactyl server. Returns true if on and false if off.
 // DOES NOT INCLUDE IN "STARTING" MODE.
-func CheckStatus(apiURL string, apiToken string, uid string) bool {
+func CheckStatus(cfg *config.Config, uid string) bool {
 	// Build endpoint.
-	urlstr := apiURL + "/" + "api/client/servers/" + uid + "/resources"
+	urlstr := cfg.APIURL + "/" + "api/client/servers/" + uid + "/resources"
 
 	// Setup HTTP GET request.
 	client := &http.Client{Timeout: time.Second * 5}
 	req, _ := http.NewRequest("GET", urlstr, nil)
 
 	// Set authorization header.
-	req.Header.Set("Authorization", "Bearer "+apiToken)
+	req.Header.Set("Authorization", "Bearer "+cfg.Token)
 
 	// Set data to JSON.
 	req.Header.Set("Content-Type", "application/json")
@@ -230,9 +230,9 @@ func CheckStatus(apiURL string, apiToken string, uid string) bool {
 }
 
 // Kills the specified server.
-func KillServer(apiURL string, apiToken string, uid string) {
+func KillServer(cfg *config.Config, uid string) {
 	// Build endpoint.
-	urlstr := apiURL + "/" + "api/client/servers/" + uid + "/" + "power"
+	urlstr := cfg.APIURL + "/" + "api/client/servers/" + uid + "/" + "power"
 
 	// Setup form data.
 	var formdata = []byte(`{"signal": "kill"}`)
@@ -242,7 +242,7 @@ func KillServer(apiURL string, apiToken string, uid string) {
 	req, _ := http.NewRequest("POST", urlstr, bytes.NewBuffer(formdata))
 
 	// Set authorization header.
-	req.Header.Set("Authorization", "Bearer "+apiToken)
+	req.Header.Set("Authorization", "Bearer "+cfg.Token)
 
 	// Set data to JSON.
 	req.Header.Set("Content-Type", "application/json")
@@ -262,9 +262,9 @@ func KillServer(apiURL string, apiToken string, uid string) {
 }
 
 // Starts the specified server.
-func StartServer(apiURL string, apiToken string, uid string) {
+func StartServer(cfg *config.Config, uid string) {
 	// Build endpoint.
-	urlstr := apiURL + "/" + "api/client/servers/" + uid + "/" + "power"
+	urlstr := cfg.APIURL + "/" + "api/client/servers/" + uid + "/" + "power"
 
 	// Setup form data.
 	var formdata = []byte(`{"signal": "start"}`)
@@ -274,7 +274,7 @@ func StartServer(apiURL string, apiToken string, uid string) {
 	req, _ := http.NewRequest("POST", urlstr, bytes.NewBuffer(formdata))
 
 	// Set authorization header.
-	req.Header.Set("Authorization", "Bearer "+apiToken)
+	req.Header.Set("Authorization", "Bearer "+cfg.Token)
 
 	// Set data to JSON.
 	req.Header.Set("Content-Type", "application/json")
