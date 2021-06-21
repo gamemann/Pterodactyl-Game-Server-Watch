@@ -83,6 +83,7 @@ func AddServers(cfg *config.Config) bool {
 
 			// Set UID (in this case, identifier) and default values.
 			sta.Enable = true
+			sta.ViaAPI = true
 			sta.UID = attr["identifier"].(string)
 			sta.ScanTime = 5
 			sta.MaxFails = 10
@@ -167,8 +168,6 @@ func AddServers(cfg *config.Config) bool {
 
 			// Append to servers slice.
 			cfg.Servers = append(cfg.Servers, sta)
-
-			fmt.Println("[API] Adding server " + sta.IP + ":" + strconv.Itoa(sta.Port) + " with UID " + sta.UID + ". Scan time => " + strconv.Itoa(sta.ScanTime) + ". Max Fails => " + strconv.Itoa(sta.MaxFails) + ". Max Restarts => " + strconv.Itoa(sta.MaxRestarts) + ". Restart Interval => " + strconv.Itoa(sta.RestartInt) + ". Enabled => " + strconv.FormatBool(sta.Enable) + ".")
 		}
 	}
 

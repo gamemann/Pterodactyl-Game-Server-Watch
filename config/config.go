@@ -16,6 +16,7 @@ type Server struct {
 	MaxFails    int    `json:"maxfails"`
 	MaxRestarts int    `json:"maxrestarts"`
 	RestartInt  int    `json:"restartint"`
+	ViaAPI      bool
 }
 
 // Misc options.
@@ -29,13 +30,13 @@ type Config struct {
 	APIURL     string   `json:"apiurl"`
 	Token      string   `json:"token"`
 	AddServers bool     `json:"addservers"`
+	DebugLevel int      `json:"debug"`
 	Servers    []Server `json:"servers"`
 	Misc       []Misc   `json:"misc"`
 }
 
 // Reads a config file based off of the file name (string) and returns a Config struct.
 func ReadConfig(cfg *Config, filename string) bool {
-
 	file, err := os.Open(filename)
 
 	if err != nil {

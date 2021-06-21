@@ -34,19 +34,20 @@ func ServerWatch(srvidx int, timer *time.Ticker, fails *int, restarts *int, next
 			// Send A2S_INFO request.
 			query.SendRequest(conn)
 
-			//fmt.Println("[" + server.IP + ":" + strconv.Itoa(server.Port) + "] A2S_INFO sent.")
+			if cfg.DebugLevel > 2 {
+				fmt.Println("[D3][" + srv.IP + ":" + strconv.Itoa(srv.Port) + "] A2S_INFO sent.")
+			}
 
 			// Check for response. If no response, increase fail count. Otherwise, reset fail count to 0.
 			if !query.CheckResponse(conn) {
 				// Increase fail count.
 				*fails++
-
-				//fmt.Println("[" + server.IP + ":" + strconv.Itoa(server.Port) + "] Fails => " + strconv.Itoa(*fails))
+				if cfg.DebugLevel > 1 {
+					fmt.Println("[D2][" + srv.IP + ":" + strconv.Itoa(srv.Port) + "] Fails => " + strconv.Itoa(*fails))
+				}
 
 				// Check to see if we want to restart the server.
 				if *fails >= srv.MaxFails && *restarts < srv.MaxRestarts && *nextscan < time.Now().Unix() {
-					//fmt.Println("[" + server.IP + ":" + strconv.Itoa(server.Port) + "] Fails exceeded.")
-
 					// Attempt to kill container.
 					pterodactyl.KillServer(cfg.APIURL, cfg.Token, srv.UID)
 
@@ -67,11 +68,18 @@ func ServerWatch(srvidx int, timer *time.Ticker, fails *int, restarts *int, next
 					*nextscan = time.Now().Unix() + int64(restartint)
 
 					// Debug.
-					fmt.Println(srv.IP + ":" + strconv.Itoa(srv.Port) + " was found down. Attempting to restart. Fail Count => " + strconv.Itoa(*fails) + ". Restart Count => " + strconv.Itoa(*restarts) + ".")
+					if cfg.DebugLevel > 0 {
+						fmt.Println("[D1][" + srv.IP + ":" + strconv.Itoa(srv.Port) + "] Server found down. Attempting to restart. Fail Count => " + strconv.Itoa(*fails) + ". Restart Count => " + strconv.Itoa(*restarts) + ".")
+					}
 
 					// Look for web hooks.
 					if len(cfg.Misc) > 0 {
 						for i, v := range cfg.Misc {
+							// Level 2 debug.
+							if cfg.DebugLevel > 1 {
+								fmt.Println("[D2] Loading MISC option #" + strconv.Itoa(i) + " with type " + v.Type + ".")
+							}
+
 							if v.Type == "webhook" {
 								// Set defaults.
 								contentpre := "**SERVER DOWN**\n- IP => {IP}\n- Port => {PORT}\n- Fail Count => {FAILS}/{MAXFAILS}"
@@ -126,6 +134,11 @@ func ServerWatch(srvidx int, timer *time.Ticker, fails *int, restarts *int, next
 								contents = strings.ReplaceAll(contents, "{UID}", srv.UID)
 								contents = strings.ReplaceAll(contents, "{SCANTIME}", strconv.Itoa(srv.ScanTime))
 
+								// Level 3 debug.
+								if cfg.DebugLevel > 2 {
+									fmt.Println("[D3] Loaded web hook with ID => " + id + ". Token => " + token + ". Contents => " + contents + ". Username => " + username + ". Avatar URL => " + avatarurl + ". Allowed Mentions => " + strconv.FormatBool(allowedmentions) + ".")
+								}
+
 								// Submit web hook.
 								misc.DiscordWebHook(id, token, contents, username, avatarurl, allowedmentions)
 							}
@@ -157,6 +170,11 @@ func main() {
 	// Attempt to read config.
 	config.ReadConfig(&cfg, configFile)
 
+	// Level 1 debug.
+	if cfg.DebugLevel > 0 {
+		fmt.Println("[D1] Found config with API URL => " + cfg.APIURL + ". Token => " + cfg.Token + ". Auto Add Servers => " + strconv.FormatBool(cfg.AddServers) + ". Debug level => " + strconv.Itoa(cfg.DebugLevel))
+	}
+
 	// Check if we want to automatically add servers.
 	if cfg.AddServers {
 		pterodactyl.AddServers(&cfg)
@@ -164,8 +182,14 @@ func main() {
 
 	// Loop through each container from the config.
 	for i := 0; i < len(cfg.Servers); i++ {
+		srv := cfg.Servers[i]
+
+		if cfg.DebugLevel > 0 {
+			fmt.Println("[D1] Adding server " + srv.IP + ":" + strconv.Itoa(srv.Port) + " with UID " + srv.UID + ". Auto Add => " + strconv.FormatBool(srv.ViaAPI) + ". Scan time => " + strconv.Itoa(srv.ScanTime) + ". Max Fails => " + strconv.Itoa(srv.MaxFails) + ". Max Restarts => " + strconv.Itoa(srv.MaxRestarts) + ". Restart Interval => " + strconv.Itoa(srv.RestartInt) + ". Enabled => " + strconv.FormatBool(srv.Enable) + ".")
+		}
+
 		// Check if server is enabled for scanning.
-		if !cfg.Servers[i].Enable {
+		if !srv.Enable {
 			continue
 		}
 
@@ -175,17 +199,17 @@ func main() {
 		var nextscan int64 = 0
 
 		// Get scan time.
-		stime := cfg.Servers[i].ScanTime
+		stime := srv.ScanTime
 
 		if stime < 1 {
 			stime = 5
 		}
 
 		// Let's create the connection now.
-		conn, err := query.CreateConnection(cfg.Servers[i].IP, cfg.Servers[i].Port)
+		conn, err := query.CreateConnection(srv.IP, srv.Port)
 
 		if err != nil {
-			fmt.Println("Error creating UDP connection for " + cfg.Servers[i].IP + ":" + strconv.Itoa(cfg.Servers[i].Port))
+			fmt.Println("Error creating UDP connection for " + srv.IP + ":" + strconv.Itoa(srv.Port))
 			fmt.Println(err)
 
 			return
