@@ -6,24 +6,27 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"syscall"
 	"time"
 
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/config"
+	"github.com/gamemann/Pterodactyl-Game-Server-Watch/misc"
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/pterodactyl"
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/query"
 )
 
 // Timer function.
-func ServerWatch(server config.Server, timer *time.Ticker, fails *int, restarts *int, nextscan *int64, conn *net.UDPConn, apiURL string, apiToken string) {
+func ServerWatch(srvidx int, timer *time.Ticker, fails *int, restarts *int, nextscan *int64, conn *net.UDPConn, cfg *config.Config) {
 	destroy := make(chan struct{})
 
 	for {
 		select {
 		case <-timer.C:
+			srv := cfg.Servers[srvidx]
 
 			// Check if container status is 'on'.
-			if !pterodactyl.CheckStatus(apiURL, apiToken, server.UID) {
+			if !pterodactyl.CheckStatus(cfg.APIURL, cfg.Token, srv.UID) {
 
 				continue
 			}
@@ -41,20 +44,20 @@ func ServerWatch(server config.Server, timer *time.Ticker, fails *int, restarts 
 				//fmt.Println("[" + server.IP + ":" + strconv.Itoa(server.Port) + "] Fails => " + strconv.Itoa(*fails))
 
 				// Check to see if we want to restart the server.
-				if *fails >= server.MaxFails && *restarts < server.MaxRestarts && *nextscan < time.Now().Unix() {
+				if *fails >= srv.MaxFails && *restarts < srv.MaxRestarts && *nextscan < time.Now().Unix() {
 					//fmt.Println("[" + server.IP + ":" + strconv.Itoa(server.Port) + "] Fails exceeded.")
 
 					// Attempt to kill container.
-					pterodactyl.KillServer(apiURL, apiToken, server.UID)
+					pterodactyl.KillServer(cfg.APIURL, cfg.Token, srv.UID)
 
 					// Now attempt to start it again.
-					pterodactyl.StartServer(apiURL, apiToken, server.UID)
+					pterodactyl.StartServer(cfg.APIURL, cfg.Token, srv.UID)
 
 					// Increment restarts count.
 					*restarts++
 
 					// Set next scan time and ensure the restart interval is at least 1.
-					restartint := server.RestartInt
+					restartint := srv.RestartInt
 
 					if restartint < 1 {
 						restartint = 120
@@ -64,14 +67,76 @@ func ServerWatch(server config.Server, timer *time.Ticker, fails *int, restarts 
 					*nextscan = time.Now().Unix() + int64(restartint)
 
 					// Debug.
-					fmt.Println(server.IP + ":" + strconv.Itoa(server.Port) + " was found down. Attempting to restart. Fail Count => " + strconv.Itoa(*fails) + ". Restart Count => " + strconv.Itoa(*restarts) + ".")
+					fmt.Println(srv.IP + ":" + strconv.Itoa(srv.Port) + " was found down. Attempting to restart. Fail Count => " + strconv.Itoa(*fails) + ". Restart Count => " + strconv.Itoa(*restarts) + ".")
+
+					// Look for web hooks.
+					if len(cfg.Misc) > 0 {
+						for i, v := range cfg.Misc {
+							if v.Type == "webhook" {
+								// Set defaults.
+								contentpre := "**SERVER DOWN**\n- IP => {IP}\n- Port => {PORT}\n- Fail Count => {FAILS}/{MAXFAILS}"
+								username := "Pterowatch"
+								avatarurl := ""
+								allowedmentions := false
+
+								// Check for webhook ID and token.
+								if v.Data.(map[string]interface{})["id"] == nil {
+									fmt.Println("[ERR] Web hook ID #" + strconv.Itoa(i) + " has no webhook ID.")
+
+									continue
+								}
+
+								if v.Data.(map[string]interface{})["token"] == nil {
+									fmt.Println("[ERR] Web hook ID #" + strconv.Itoa(i) + " has no webhook token.")
+
+									continue
+								}
+
+								id := v.Data.(map[string]interface{})["id"].(string)
+								token := v.Data.(map[string]interface{})["token"].(string)
+
+								// Look for contents override.
+								if v.Data.(map[string]interface{})["contents"] != nil {
+									contentpre = v.Data.(map[string]interface{})["contents"].(string)
+								}
+
+								// Look for username override.
+								if v.Data.(map[string]interface{})["username"] != nil {
+									username = v.Data.(map[string]interface{})["username"].(string)
+								}
+
+								// Look for avatar URL override.
+								if v.Data.(map[string]interface{})["avatarurl"] != nil {
+									avatarurl = v.Data.(map[string]interface{})["avatarurl"].(string)
+								}
+
+								// Look for allowed mentions override.
+								if v.Data.(map[string]interface{})["allowedmentions"] != nil {
+									allowedmentions = v.Data.(map[string]interface{})["avatarurl"].(bool)
+								}
+
+								// Replace variables in strings.
+								contents := contentpre
+								contents = strings.ReplaceAll(contents, "{IP}", srv.IP)
+								contents = strings.ReplaceAll(contents, "{PORT}", strconv.Itoa(srv.Port))
+								contents = strings.ReplaceAll(contents, "{FAILS}", strconv.Itoa(*fails))
+								contents = strings.ReplaceAll(contents, "{RESTARTS}", strconv.Itoa(*restarts))
+								contents = strings.ReplaceAll(contents, "{MAXFAILS}", strconv.Itoa(srv.MaxFails))
+								contents = strings.ReplaceAll(contents, "{MAXRESTARTS}", strconv.Itoa(srv.MaxRestarts))
+								contents = strings.ReplaceAll(contents, "{UID}", srv.UID)
+								contents = strings.ReplaceAll(contents, "{SCANTIME}", strconv.Itoa(srv.ScanTime))
+
+								// Submit web hook.
+								misc.DiscordWebHook(id, token, contents, username, avatarurl, allowedmentions)
+							}
+						}
+					}
 				}
 			} else {
 				// Reset everything.
 				*fails = 0
 				*restarts = 0
 				*nextscan = 0
-				*restarts = 0
 			}
 
 		case <-destroy:
@@ -128,7 +193,7 @@ func main() {
 
 		// Create repeating timer.
 		ticker := time.NewTicker(time.Duration(stime) * time.Second)
-		go ServerWatch(cfg.Servers[i], ticker, &fails, &restarts, &nextscan, conn, cfg.APIURL, cfg.Token)
+		go ServerWatch(i, ticker, &fails, &restarts, &nextscan, conn, &cfg)
 	}
 
 	// Signal.
