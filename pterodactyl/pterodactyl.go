@@ -150,7 +150,7 @@ func AddServers(cfg *config.Config) bool {
 					}
 
 					// Check for restart interval override.
-					if vari["env_variable"].(string) == "PTEROWATCH_RETARTINT" {
+					if vari["env_variable"].(string) == "PTEROWATCH_RESTARTINT" {
 						sta.RestartInt, _ = strconv.Atoi(val)
 					}
 
