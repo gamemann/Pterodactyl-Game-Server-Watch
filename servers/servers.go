@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/config"
-	"github.com/gamemann/Pterodactyl-Game-Server-Watch/misc"
+	"github.com/gamemann/Pterodactyl-Game-Server-Watch/events"
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/pterodactyl"
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/query"
 )
@@ -45,11 +45,14 @@ func ServerWatch(srvidx int, timer *time.Ticker, fails *int, restarts *int, next
 
 				// Check to see if we want to restart the server.
 				if *fails >= srv.MaxFails && *restarts < srv.MaxRestarts && *nextscan < time.Now().Unix() {
-					// Attempt to kill container.
-					pterodactyl.KillServer(cfg, srv.UID)
+					// Check if we want to restart the container.
+					if !srv.ReportOnly {
+						// Attempt to kill container.
+						pterodactyl.KillServer(cfg, srv.UID)
 
-					// Now attempt to start it again.
-					pterodactyl.StartServer(cfg, srv.UID)
+						// Now attempt to start it again.
+						pterodactyl.StartServer(cfg, srv.UID)
+					}
 
 					// Increment restarts count.
 					*restarts++
@@ -66,74 +69,10 @@ func ServerWatch(srvidx int, timer *time.Ticker, fails *int, restarts *int, next
 
 					// Debug.
 					if cfg.DebugLevel > 0 {
-						fmt.Println("[D1][" + srv.IP + ":" + strconv.Itoa(srv.Port) + "] Server found down. Attempting to restart. Fail Count => " + strconv.Itoa(*fails) + ". Restart Count => " + strconv.Itoa(*restarts) + ".")
+						fmt.Println("[D1][" + srv.IP + ":" + strconv.Itoa(srv.Port) + "] Server found down. Report Only => " + strconv.FormatBool(srv.ReportOnly) + ". Fail Count => " + strconv.Itoa(*fails) + ". Restart Count => " + strconv.Itoa(*restarts) + ".")
 					}
 
-					// Look for web hooks.
-					if len(cfg.Misc) > 0 {
-						for i, v := range cfg.Misc {
-							// Level 2 debug.
-							if cfg.DebugLevel > 1 {
-								fmt.Println("[D2] Loading MISC option #" + strconv.Itoa(i) + " with type " + v.Type + ".")
-							}
-
-							if v.Type == "webhook" {
-								// Set defaults.
-								contentpre := "**SERVER DOWN**\n- IP => {IP}\n- Port => {PORT}\n- Fail Count => {FAILS}/{MAXFAILS}"
-								username := "Pterowatch"
-								avatarurl := ""
-								allowedmentions := false
-
-								// Check for webhook ID and token.
-								if v.Data.(map[string]interface{})["id"] == nil {
-									fmt.Println("[ERR] Web hook ID #" + strconv.Itoa(i) + " has no webhook ID.")
-
-									continue
-								}
-
-								if v.Data.(map[string]interface{})["token"] == nil {
-									fmt.Println("[ERR] Web hook ID #" + strconv.Itoa(i) + " has no webhook token.")
-
-									continue
-								}
-
-								id := v.Data.(map[string]interface{})["id"].(string)
-								token := v.Data.(map[string]interface{})["token"].(string)
-
-								// Look for contents override.
-								if v.Data.(map[string]interface{})["contents"] != nil {
-									contentpre = v.Data.(map[string]interface{})["contents"].(string)
-								}
-
-								// Look for username override.
-								if v.Data.(map[string]interface{})["username"] != nil {
-									username = v.Data.(map[string]interface{})["username"].(string)
-								}
-
-								// Look for avatar URL override.
-								if v.Data.(map[string]interface{})["avatarurl"] != nil {
-									avatarurl = v.Data.(map[string]interface{})["avatarurl"].(string)
-								}
-
-								// Look for allowed mentions override.
-								if v.Data.(map[string]interface{})["allowedmentions"] != nil {
-									allowedmentions = v.Data.(map[string]interface{})["avatarurl"].(bool)
-								}
-
-								// Replace variables in strings.
-								contents := contentpre
-								misc.FormatContents(&contents, *fails, *restarts, &srv)
-
-								// Level 3 debug.
-								if cfg.DebugLevel > 2 {
-									fmt.Println("[D3] Loaded web hook with ID => " + id + ". Token => " + token + ". Contents => " + contents + ". Username => " + username + ". Avatar URL => " + avatarurl + ". Allowed Mentions => " + strconv.FormatBool(allowedmentions) + ".")
-								}
-
-								// Submit web hook.
-								misc.DiscordWebHook(id, token, contents, username, avatarurl, allowedmentions)
-							}
-						}
-					}
+					events.OnServerDown(cfg, srvidx, *fails, *restarts)
 				}
 			} else {
 				// Reset everything.
