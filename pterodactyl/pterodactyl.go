@@ -84,6 +84,7 @@ func AddServers(cfg *config.Config) bool {
 			// Set UID (in this case, identifier) and default values.
 			sta.Enable = true
 			sta.ViaAPI = true
+			sta.ReportOnly = false
 			sta.UID = attr["identifier"].(string)
 			sta.ScanTime = 5
 			sta.MaxFails = 10
@@ -153,6 +154,15 @@ func AddServers(cfg *config.Config) bool {
 					// Check for restart interval override.
 					if vari["env_variable"].(string) == "PTEROWATCH_RESTARTINT" {
 						sta.RestartInt, _ = strconv.Atoi(val)
+					}
+
+					// Check for report only override.
+					if vari["env_variable"].(string) == "PTEROWATCH_REPORTONLY" {
+						reportonly, _ := strconv.Atoi(val)
+
+						if reportonly > 0 {
+							sta.ReportOnly = true
+						}
 					}
 
 					// Check for disable override.

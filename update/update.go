@@ -48,11 +48,11 @@ func AddNewServers(newcfg *config.Config, cfg *config.Config) {
 
 			// Now compare.
 			if nt == ot {
-				// We don't have to insert this server into the array.
+				// We don't have to insert this server into the slice.
 				toadd = false
 
 				if cfg.DebugLevel > 3 {
-					fmt.Println("[D4] Found matching server on Add Server check. Applying new configuration. Enabled: " + strconv.FormatBool(oldsrv.Enable) + " => " + strconv.FormatBool(newsrv.Enable) + ". Max fails: " + strconv.Itoa(oldsrv.MaxFails) + " => " + strconv.Itoa(newsrv.MaxFails) + ". Max Restarts: " + strconv.Itoa(oldsrv.MaxRestarts) + " => " + strconv.Itoa(newsrv.MaxRestarts) + ". Restart Int: " + strconv.Itoa(oldsrv.RestartInt) + " => " + strconv.Itoa(newsrv.RestartInt) + ". Scan Time: " + strconv.Itoa(oldsrv.ScanTime) + " => " + strconv.Itoa(newsrv.ScanTime) + ".")
+					fmt.Println("[D4] Found matching server on Add Server check. Applying new configuration. Enabled: " + strconv.FormatBool(oldsrv.Enable) + " => " + strconv.FormatBool(newsrv.Enable) + ". Max fails: " + strconv.Itoa(oldsrv.MaxFails) + " => " + strconv.Itoa(newsrv.MaxFails) + ". Max Restarts: " + strconv.Itoa(oldsrv.MaxRestarts) + " => " + strconv.Itoa(newsrv.MaxRestarts) + ". Restart Int: " + strconv.Itoa(oldsrv.RestartInt) + " => " + strconv.Itoa(newsrv.RestartInt) + ". Scan Time: " + strconv.Itoa(oldsrv.ScanTime) + " => " + strconv.Itoa(newsrv.ScanTime) + ". Report Only: " + strconv.FormatBool(oldsrv.ReportOnly) + " => " + strconv.FormatBool(newsrv.ReportOnly) + ".")
 				}
 
 				// Update specific configuration.
@@ -61,6 +61,7 @@ func AddNewServers(newcfg *config.Config, cfg *config.Config) {
 				cfg.Servers[i].MaxRestarts = newsrv.MaxRestarts
 				cfg.Servers[i].RestartInt = newsrv.RestartInt
 				cfg.Servers[i].ScanTime = newsrv.ScanTime
+				cfg.Servers[i].ReportOnly = newsrv.ReportOnly
 			}
 		}
 

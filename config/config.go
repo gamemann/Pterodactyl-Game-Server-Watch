@@ -16,6 +16,7 @@ type Server struct {
 	MaxFails    int    `json:"maxfails"`
 	MaxRestarts int    `json:"maxrestarts"`
 	RestartInt  int    `json:"restartint"`
+	ReportOnly  bool   `json:"reportonly"`
 	ViaAPI      bool
 }
 

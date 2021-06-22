@@ -45,11 +45,14 @@ func ServerWatch(srvidx int, timer *time.Ticker, fails *int, restarts *int, next
 
 				// Check to see if we want to restart the server.
 				if *fails >= srv.MaxFails && *restarts < srv.MaxRestarts && *nextscan < time.Now().Unix() {
-					// Attempt to kill container.
-					pterodactyl.KillServer(cfg, srv.UID)
+					// Check if we want to restart the container.
+					if !srv.ReportOnly {
+						// Attempt to kill container.
+						pterodactyl.KillServer(cfg, srv.UID)
 
-					// Now attempt to start it again.
-					pterodactyl.StartServer(cfg, srv.UID)
+						// Now attempt to start it again.
+						pterodactyl.StartServer(cfg, srv.UID)
+					}
 
 					// Increment restarts count.
 					*restarts++
@@ -66,7 +69,7 @@ func ServerWatch(srvidx int, timer *time.Ticker, fails *int, restarts *int, next
 
 					// Debug.
 					if cfg.DebugLevel > 0 {
-						fmt.Println("[D1][" + srv.IP + ":" + strconv.Itoa(srv.Port) + "] Server found down. Attempting to restart. Fail Count => " + strconv.Itoa(*fails) + ". Restart Count => " + strconv.Itoa(*restarts) + ".")
+						fmt.Println("[D1][" + srv.IP + ":" + strconv.Itoa(srv.Port) + "] Server found down. Report Only => " + strconv.FormatBool(srv.ReportOnly) + ". Fail Count => " + strconv.Itoa(*fails) + ". Restart Count => " + strconv.Itoa(*restarts) + ".")
 					}
 
 					events.OnServerDown(cfg, srvidx, *fails, *restarts)
