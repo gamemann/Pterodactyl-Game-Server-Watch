@@ -23,12 +23,28 @@ func main() {
 	// Create config struct.
 	cfg := config.Config{}
 
+	// Set some defaults.
+	cfg.AddServers = false
+	cfg.DebugLevel = 0
+	cfg.ReloadTime = 500
+
+	cfg.DefScanTime = 5
+	cfg.DefMaxFails = 10
+	cfg.DefMaxRestarts = 2
+	cfg.DefRestartInt = 120
+	cfg.DefReportOnly = false
+
 	// Attempt to read config.
 	config.ReadConfig(&cfg, *configFile)
 
 	// Level 1 debug.
 	if cfg.DebugLevel > 0 {
-		fmt.Println("[D1] Found config with API URL => " + cfg.APIURL + ". Token => " + cfg.Token + ". Auto Add Servers => " + strconv.FormatBool(cfg.AddServers) + ". Debug level => " + strconv.Itoa(cfg.DebugLevel))
+		fmt.Println("[D1] Found config with API URL => " + cfg.APIURL + ". Token => " + cfg.Token + ". Auto Add Servers => " + strconv.FormatBool(cfg.AddServers) + ". Debug level => " + strconv.Itoa(cfg.DebugLevel) + ". Reload time => " + strconv.Itoa(cfg.ReloadTime))
+	}
+
+	// Level 2 debug.
+	if cfg.DebugLevel > 1 {
+		fmt.Println("[D2] Config default server values. Scan time => " + strconv.Itoa(cfg.DefScanTime) + ". Max Fails => " + strconv.Itoa(cfg.DefMaxFails) + ". Max Restarts => " + strconv.Itoa(cfg.DefMaxRestarts) + ". Restart Interval => " + strconv.Itoa(cfg.DefRestartInt) + ". Report Only => " + strconv.FormatBool(cfg.DefReportOnly) + ".")
 	}
 
 	// Check if we want to automatically add servers.
