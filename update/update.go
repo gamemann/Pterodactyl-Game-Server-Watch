@@ -22,8 +22,8 @@ var updateticker *time.Ticker
 func AddNewServers(newcfg *config.Config, cfg *config.Config) {
 	// Loop through all new servers.
 	for i, newsrv := range newcfg.Servers {
-		if cfg.DebugLevel > 2 {
-			fmt.Println("[D3] Looking for " + newsrv.IP + ":" + strconv.Itoa(newsrv.Port) + ":" + newsrv.UID + " (" + strconv.Itoa(i) + ") inside of old configuration.")
+		if cfg.DebugLevel > 3 {
+			fmt.Println("[D4] Looking for " + newsrv.IP + ":" + strconv.Itoa(newsrv.Port) + ":" + newsrv.UID + " (" + strconv.Itoa(i) + ") inside of old configuration.")
 		}
 
 		toadd := true
@@ -42,8 +42,8 @@ func AddNewServers(newcfg *config.Config, cfg *config.Config) {
 			ot.Port = oldsrv.Port
 			ot.UID = oldsrv.UID
 
-			if cfg.DebugLevel > 3 {
-				fmt.Println("[D4] Comparing " + nt.IP + ":" + strconv.Itoa(nt.Port) + ":" + nt.UID + " == " + ot.IP + ":" + strconv.Itoa(ot.Port) + ":" + ot.UID + " (" + strconv.Itoa(j) + ").")
+			if cfg.DebugLevel > 4 {
+				fmt.Println("[D5] Comparing " + nt.IP + ":" + strconv.Itoa(nt.Port) + ":" + nt.UID + " == " + ot.IP + ":" + strconv.Itoa(ot.Port) + ":" + ot.UID + " (" + strconv.Itoa(j) + ").")
 			}
 
 			// Now compare.
@@ -99,8 +99,8 @@ func DelOldServers(newcfg *config.Config, cfg *config.Config) {
 			nt.Port = newsrv.Port
 			nt.UID = newsrv.UID
 
-			if cfg.DebugLevel > 2 {
-				fmt.Println("[D3] Comparing " + ot.IP + ":" + strconv.Itoa(ot.Port) + ":" + ot.UID + " == " + nt.IP + ":" + strconv.Itoa(nt.Port) + ":" + nt.UID + " (" + strconv.Itoa(j) + ").")
+			if cfg.DebugLevel > 4 {
+				fmt.Println("[D5] Comparing " + ot.IP + ":" + strconv.Itoa(ot.Port) + ":" + ot.UID + " == " + nt.IP + ":" + strconv.Itoa(nt.Port) + ":" + nt.UID + " (" + strconv.Itoa(j) + ").")
 			}
 
 			// Now compare.
