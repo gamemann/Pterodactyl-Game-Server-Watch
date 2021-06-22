@@ -82,10 +82,10 @@ func AddServers(cfg *config.Config) bool {
 			var sta config.Server
 
 			// Set UID (in this case, identifier) and default values.
-			sta.Enable = true
 			sta.ViaAPI = true
-			sta.ReportOnly = false
 			sta.UID = attr["identifier"].(string)
+
+			sta.Enable = cfg.DefEnable
 			sta.ScanTime = cfg.DefScanTime
 			sta.MaxFails = cfg.DefMaxFails
 			sta.MaxRestarts = cfg.DefMaxRestarts

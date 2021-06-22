@@ -33,6 +33,7 @@ type Config struct {
 	AddServers     bool     `json:"addservers"`
 	DebugLevel     int      `json:"debug"`
 	ReloadTime     int      `json:"reloadtime"`
+	DefEnable      bool     `json:"defenable"`
 	DefScanTime    int      `json:"defscantime"`
 	DefMaxFails    int      `json:"defmaxfails"`
 	DefMaxRestarts int      `json:"defmaxrestarts"`

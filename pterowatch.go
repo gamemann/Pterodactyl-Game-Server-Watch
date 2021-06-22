@@ -28,6 +28,7 @@ func main() {
 	cfg.DebugLevel = 0
 	cfg.ReloadTime = 500
 
+	cfg.DefEnable = true
 	cfg.DefScanTime = 5
 	cfg.DefMaxFails = 10
 	cfg.DefMaxRestarts = 2
@@ -44,7 +45,7 @@ func main() {
 
 	// Level 2 debug.
 	if cfg.DebugLevel > 1 {
-		fmt.Println("[D2] Config default server values. Scan time => " + strconv.Itoa(cfg.DefScanTime) + ". Max Fails => " + strconv.Itoa(cfg.DefMaxFails) + ". Max Restarts => " + strconv.Itoa(cfg.DefMaxRestarts) + ". Restart Interval => " + strconv.Itoa(cfg.DefRestartInt) + ". Report Only => " + strconv.FormatBool(cfg.DefReportOnly) + ".")
+		fmt.Println("[D2] Config default server values. Enable => " + strconv.FormatBool(cfg.DefEnable) + ". Scan time => " + strconv.Itoa(cfg.DefScanTime) + ". Max Fails => " + strconv.Itoa(cfg.DefMaxFails) + ". Max Restarts => " + strconv.Itoa(cfg.DefMaxRestarts) + ". Restart Interval => " + strconv.Itoa(cfg.DefRestartInt) + ". Report Only => " + strconv.FormatBool(cfg.DefReportOnly) + ".")
 	}
 
 	// Check if we want to automatically add servers.

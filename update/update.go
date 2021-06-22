@@ -145,6 +145,7 @@ func ReloadServers(timer *time.Ticker, cfg *config.Config) {
 			cfg.DebugLevel = newcfg.DebugLevel
 			cfg.AddServers = newcfg.AddServers
 
+			cfg.DefEnable = newcfg.DefEnable
 			cfg.DefScanTime = newcfg.DefScanTime
 			cfg.DefMaxFails = newcfg.DefMaxFails
 			cfg.DefMaxRestarts = newcfg.DefMaxRestarts
