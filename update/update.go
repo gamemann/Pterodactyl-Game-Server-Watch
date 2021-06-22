@@ -42,8 +42,8 @@ func AddNewServers(newcfg *config.Config, cfg *config.Config) {
 			ot.Port = oldsrv.Port
 			ot.UID = oldsrv.UID
 
-			if cfg.DebugLevel > 2 {
-				fmt.Println("[D3] Comparing " + nt.IP + ":" + strconv.Itoa(nt.Port) + ":" + nt.UID + " == " + ot.IP + ":" + strconv.Itoa(ot.Port) + ":" + ot.UID + " (" + strconv.Itoa(j) + ").")
+			if cfg.DebugLevel > 3 {
+				fmt.Println("[D4] Comparing " + nt.IP + ":" + strconv.Itoa(nt.Port) + ":" + nt.UID + " == " + ot.IP + ":" + strconv.Itoa(ot.Port) + ":" + ot.UID + " (" + strconv.Itoa(j) + ").")
 			}
 
 			// Now compare.
@@ -79,8 +79,8 @@ func AddNewServers(newcfg *config.Config, cfg *config.Config) {
 func DelOldServers(newcfg *config.Config, cfg *config.Config) {
 	// Loop through all old servers.
 	for i, oldsrv := range cfg.Servers {
-		if cfg.DebugLevel > 2 {
-			fmt.Println("[D3] Looking for " + oldsrv.IP + ":" + strconv.Itoa(oldsrv.Port) + ":" + oldsrv.UID + " (" + strconv.Itoa(i) + ") inside of new configuration.")
+		if cfg.DebugLevel > 3 {
+			fmt.Println("[D4] Looking for " + oldsrv.IP + ":" + strconv.Itoa(oldsrv.Port) + ":" + oldsrv.UID + " (" + strconv.Itoa(i) + ") inside of new configuration.")
 		}
 
 		todel := true
