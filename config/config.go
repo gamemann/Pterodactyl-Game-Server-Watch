@@ -28,14 +28,20 @@ type Misc struct {
 
 // Config struct used for the general config.
 type Config struct {
-	APIURL     string   `json:"apiurl"`
-	Token      string   `json:"token"`
-	AddServers bool     `json:"addservers"`
-	DebugLevel int      `json:"debug"`
-	ReloadTime int      `json:"reloadtime"`
-	Servers    []Server `json:"servers"`
-	Misc       []Misc   `json:"misc"`
-	ConfLoc    string
+	APIURL         string   `json:"apiurl"`
+	Token          string   `json:"token"`
+	AddServers     bool     `json:"addservers"`
+	DebugLevel     int      `json:"debug"`
+	ReloadTime     int      `json:"reloadtime"`
+	DefEnable      bool     `json:"defenable"`
+	DefScanTime    int      `json:"defscantime"`
+	DefMaxFails    int      `json:"defmaxfails"`
+	DefMaxRestarts int      `json:"defmaxrestarts"`
+	DefRestartInt  int      `json:"defrestartint"`
+	DefReportOnly  bool     `json:"defreportonly"`
+	Servers        []Server `json:"servers"`
+	Misc           []Misc   `json:"misc"`
+	ConfLoc        string
 }
 
 // Reads a config file based off of the file name (string) and returns a Config struct.

@@ -82,14 +82,15 @@ func AddServers(cfg *config.Config) bool {
 			var sta config.Server
 
 			// Set UID (in this case, identifier) and default values.
-			sta.Enable = true
 			sta.ViaAPI = true
-			sta.ReportOnly = false
 			sta.UID = attr["identifier"].(string)
-			sta.ScanTime = 5
-			sta.MaxFails = 10
-			sta.MaxRestarts = 2
-			sta.RestartInt = 120
+
+			sta.Enable = cfg.DefEnable
+			sta.ScanTime = cfg.DefScanTime
+			sta.MaxFails = cfg.DefMaxFails
+			sta.MaxRestarts = cfg.DefMaxRestarts
+			sta.RestartInt = cfg.DefRestartInt
+			sta.ReportOnly = cfg.DefReportOnly
 
 			// Retrieve default IP/port.
 			for _, i := range attr["relationships"].(map[string]interface{})["allocations"].(map[string]interface{})["data"].([]interface{}) {
@@ -162,6 +163,8 @@ func AddServers(cfg *config.Config) bool {
 
 						if reportonly > 0 {
 							sta.ReportOnly = true
+						} else {
+							sta.ReportOnly = false
 						}
 					}
 
@@ -171,6 +174,8 @@ func AddServers(cfg *config.Config) bool {
 
 						if disable > 0 {
 							sta.Enable = false
+						} else {
+							sta.Enable = true
 						}
 					}
 				}
