@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"os/signal"
@@ -15,14 +16,15 @@ import (
 )
 
 func main() {
-	// Specify config file path.
-	configFile := "/etc/pterowatch/pterowatch.conf"
+	// Look for 'cfg' flag in command line arguments (default path: /etc/pterowatch/pterowatch.conf).
+	configFile := flag.String("cfg", "/etc/pterowatch/pterowatch.conf", "The path to the Pterowatch config file.")
+	flag.Parse()
 
 	// Create config struct.
 	cfg := config.Config{}
 
 	// Attempt to read config.
-	config.ReadConfig(&cfg, configFile)
+	config.ReadConfig(&cfg, *configFile)
 
 	// Level 1 debug.
 	if cfg.DebugLevel > 0 {
@@ -38,7 +40,7 @@ func main() {
 	servers.HandleServers(&cfg, false)
 
 	// Set config file for use later (e.g. updating/reloading).
-	cfg.ConfLoc = configFile
+	cfg.ConfLoc = *configFile
 
 	// Initialize updater/reloader.
 	update.Init(&cfg)
