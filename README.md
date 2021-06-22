@@ -3,11 +3,24 @@
 ## Description
 A tool programmed in Go to automatically restart 'hung' (game) servers via the Pterodactyl API (working since version 1.4.2). This only supports servers that respond to the [A2S_INFO](https://developer.valvesoftware.com/wiki/Server_queries#A2S_INFO) query (a Valve Master Server query). I am currently looking for a better way to detect if a server is hung, though.
 
+## Command Line Flags
+There is only one command line argument/flag and it is `-cfg=<path>`. This argument/flag changes the path to the Pterowatch config file. The default value is `/etc/pterowatch/pterowatch.conf`.
+
+Examples include:
+
+```
+./pterowatch -cfg=/home/cdeacon/myconf.conf
+./pterowatch -cfg=~/myconf.conf
+./pterowatch -cfg=myconf.conf
+```
+
 ## Config File
-The config file's path is `/etc/pterowatch/pterowatch.conf`. This should be a JSON array including the API URL, token, and an array of servers to check against. The main options are the following:
+The config file's default path is `/etc/pterowatch/pterowatch.conf` (this can be changed with a command line argument/flag as seen above). This should be a JSON array including the API URL, token, and an array of servers to check against. The main options are the following:
 
 * `apiurl` => The Pterodactyl API URL (do not include the `/` at the end).
 * `token` => The bearer token to use when sending requests to the Pterodactyl API.
+* `debug` => The debug level (1-4).
+* `reloadtime` => If above 0, will reload the configuration file and retrieve servers from the API every *x* seconds.
 * `addservers` => Whether or not to automatically add servers to the config from the Pterodactyl API.
 * `servers` => An array of servers to check against (read below).
 
@@ -76,6 +89,7 @@ The following strings are replaced inside of the `contents` string before the we
 * `{MAXRESTARTS}` => The server's configured max restarts.
 * `{UID}` => The server's UID from the config file/Pterodactyl API.
 * `{SCANTIME}` => The server's configured scan time.
+* `{RESTARTINT}` => The server's configured restart interval.
 
 #### Defaults
 Here are the Discord web hook's default values.
@@ -118,7 +132,7 @@ Here's an configuration example in JSON:
 }
 ```
 
-You may find other config examples in the [tests/](https://github.com/gamemann/Pterodactyl-Game-Server-Watch) directory.
+You may find other config examples in the [tests/](https://github.com/gamemann/Pterodactyl-Game-Server-Watch/tests) directory.
 
 ## Building
 You may use `git` and `go build` to build this project and produce a binary. I'd suggest cloning this to `$GOPATH` so there aren't problems with linking modules. For example:
@@ -127,7 +141,7 @@ You may use `git` and `go build` to build this project and produce a binary. I'd
 cd <Path To One $GOPATH>
 git clone https://github.com/gamemann/Pterodactyl-Game-Server-Watch.git
 cd Pterodactyl-Game-Server-Watch
-go build
+go build -o pterowatch
 ```
 
 ## Credits
