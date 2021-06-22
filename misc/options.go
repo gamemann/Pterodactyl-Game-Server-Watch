@@ -21,7 +21,7 @@ func HandleMisc(cfg *config.Config, srvidx int, fails int, restarts int) {
 			// Handle web hooks.
 			if v.Type == "webhook" {
 				// Set defaults.
-				contentpre := "**SERVER DOWN**\n- IP => {IP}\n- Port => {PORT}\n- Fail Count => {FAILS}/{MAXFAILS}"
+				contentpre := "**SERVER DOWN**\n**Name** => {NAME}\n- **IP** => {IP}:{PORT}\n- **Fail Count** => {FAILS}/{MAXFAILS}\n**Restart Count** => {RESTARTS}/{MAXRESTARTS}\n\nScanning again in *{RESTARTINT}* seconds..."
 				username := "Pterowatch"
 				avatarurl := ""
 				allowedmentions := false
