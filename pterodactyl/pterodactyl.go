@@ -107,6 +107,7 @@ func AddServers(cfg *config.Config) bool {
 				// Set UID (in this case, identifier) and default values.
 				sta.ViaAPI = true
 				sta.UID = attr["identifier"].(string)
+				sta.Name = attr["name"].(string)
 
 				sta.Enable = cfg.DefEnable
 				sta.ScanTime = cfg.DefScanTime

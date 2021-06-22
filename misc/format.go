@@ -17,4 +17,5 @@ func FormatContents(formatstr *string, fails int, restarts int, srv *config.Serv
 	*formatstr = strings.ReplaceAll(*formatstr, "{UID}", srv.UID)
 	*formatstr = strings.ReplaceAll(*formatstr, "{SCANTIME}", strconv.Itoa(srv.ScanTime))
 	*formatstr = strings.ReplaceAll(*formatstr, "{RESTARTINT}", strconv.Itoa(srv.RestartInt))
+	*formatstr = strings.ReplaceAll(*formatstr, "{NAME}", srv.Name)
 }

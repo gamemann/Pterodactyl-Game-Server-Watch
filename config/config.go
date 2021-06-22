@@ -8,6 +8,7 @@ import (
 
 // Server struct used for each server config.
 type Server struct {
+	Name        string `json:"name"`
 	Enable      bool   `json:"enable"`
 	IP          string `json:"ip"`
 	Port        int    `json:"port"`
