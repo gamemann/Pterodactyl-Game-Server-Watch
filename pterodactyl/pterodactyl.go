@@ -25,7 +25,7 @@ type Utilization struct {
 // Retrieves all servers/containers from Pterodactyl API and add them to the config.
 func AddServers(cfg *config.Config) bool {
 	// Build endpoint.
-	urlstr := cfg.APIURL + "/api/application/servers"
+	urlstr := cfg.APIURL + "/api/application/servers?include=allocations,variables"
 
 	// Setup HTTP GET request.
 	client := &http.Client{Timeout: time.Second * 5}
@@ -80,6 +80,8 @@ func AddServers(cfg *config.Config) bool {
 		return false
 	}
 
+	fmt.Println(string(body))
+
 	resp.Body.Close()
 
 	// Loop through each data item (server).
@@ -90,68 +92,12 @@ func AddServers(cfg *config.Config) bool {
 		if item["object"] == "server" {
 			attr := item["attributes"].(map[string]interface{})
 
-			ident := attr["identifier"].(string)
-
-			// Now that we have the ID, let's do a lookup from the client token which gives us all the details needed.
-			urlstr = cfg.APIURL + "/api/client/servers/" + ident
-			req, err = http.NewRequest("GET", urlstr, nil)
-
-			if err != nil {
-				fmt.Println(err)
-
-				continue
-			}
-
-			// Set client API token.
-			req.Header.Set("Authorization", "Bearer "+cfg.Token)
-
-			// Accept only JSON.
-			req.Header.Set("Accept", "application/json")
-
-			// Perform HTTP request and check for errors.
-			resp, err = client.Do(req)
-
-			if err != nil {
-				fmt.Println(err)
-
-				continue
-			}
-
-			// Read body.
-			body, err = ioutil.ReadAll(resp.Body)
-
-			if err != nil {
-				fmt.Println(err)
-
-				continue
-			}
-
-			var srvobj interface{}
-
-			// Parse JSON.
-			err = json.Unmarshal([]byte(string(body)), &srvobj)
-
-			if err != nil {
-				fmt.Println(err)
-
-				continue
-			}
-
-			// Ensure we have a object item.
-			if srvobj.(map[string]interface{})["object"] == nil {
-				fmt.Println("[ERR] Server ID " + ident + " doesn't have object item.")
-
-				continue
-			}
-
-			srvattr := srvobj.(map[string]interface{})["attributes"].(map[string]interface{})
-
 			// Build new server structure.
 			var sta config.Server
 
 			// Set UID (in this case, identifier) and default values.
 			sta.ViaAPI = true
-			sta.UID = srvattr["identifier"].(string)
+			sta.UID = attr["identifier"].(string)
 
 			sta.Enable = cfg.DefEnable
 			sta.ScanTime = cfg.DefScanTime
@@ -161,23 +107,23 @@ func AddServers(cfg *config.Config) bool {
 			sta.ReportOnly = cfg.DefReportOnly
 
 			// Retrieve default IP/port.
-			for _, i := range srvattr["relationships"].(map[string]interface{})["allocations"].(map[string]interface{})["data"].([]interface{}) {
+			for _, i := range attr["relationships"].(map[string]interface{})["allocations"].(map[string]interface{})["data"].([]interface{}) {
 				if i.(map[string]interface{})["object"].(string) != "allocation" {
 					continue
 				}
 
 				alloc := i.(map[string]interface{})["attributes"].(map[string]interface{})
 
-				if alloc["is_default"].(bool) {
+				if alloc["assigned"].(bool) {
 					sta.IP = alloc["ip"].(string)
 					sta.Port = int(alloc["port"].(float64))
 				}
 			}
 
 			// Look for overrides.
-			if srvattr["relationships"].(map[string]interface{})["variables"].(map[string]interface{})["data"] != nil {
-				for _, i := range srvattr["relationships"].(map[string]interface{})["variables"].(map[string]interface{})["data"].([]interface{}) {
-					if i.(map[string]interface{})["object"].(string) != "egg_variable" {
+			if attr["relationships"].(map[string]interface{})["variables"].(map[string]interface{})["data"] != nil {
+				for _, i := range attr["relationships"].(map[string]interface{})["variables"].(map[string]interface{})["data"].([]interface{}) {
+					if i.(map[string]interface{})["object"].(string) != "server_variable" {
 						continue
 					}
 
