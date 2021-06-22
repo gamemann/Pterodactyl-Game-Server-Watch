@@ -8,6 +8,8 @@ The config file's path is `/etc/pterowatch/pterowatch.conf`. This should be a JS
 
 * `apiurl` => The Pterodactyl API URL (do not include the `/` at the end).
 * `token` => The bearer token to use when sending requests to the Pterodactyl API.
+* `debug` => The debug level (1-4).
+* `reloadtime` => If above 0, will reload the configuration file and retrieve servers from the API every *x* seconds.
 * `addservers` => Whether or not to automatically add servers to the config from the Pterodactyl API.
 * `servers` => An array of servers to check against (read below).
 
