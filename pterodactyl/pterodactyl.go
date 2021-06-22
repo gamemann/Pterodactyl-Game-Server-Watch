@@ -29,7 +29,13 @@ func AddServers(cfg *config.Config) bool {
 
 	// Setup HTTP GET request.
 	client := &http.Client{Timeout: time.Second * 5}
-	req, _ := http.NewRequest("GET", urlstr, nil)
+	req, err := http.NewRequest("GET", urlstr, nil)
+
+	if err != nil {
+		fmt.Println(err)
+
+		return false
+	}
 
 	// Set Application API token.
 	req.Header.Set("Authorization", "Bearer "+cfg.AppToken)
@@ -88,7 +94,13 @@ func AddServers(cfg *config.Config) bool {
 
 			// Now that we have the ID, let's do a lookup from the client token which gives us all the details needed.
 			urlstr = cfg.APIURL + "/api/client/servers/" + ident
-			req, _ = http.NewRequest("GET", urlstr, nil)
+			req, err = http.NewRequest("GET", urlstr, nil)
+
+			if err != nil {
+				fmt.Println(err)
+
+				continue
+			}
 
 			// Set client API token.
 			req.Header.Set("Authorization", "Bearer "+cfg.Token)
