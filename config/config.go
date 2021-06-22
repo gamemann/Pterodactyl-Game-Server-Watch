@@ -69,6 +69,8 @@ func ReadConfig(cfg *Config, filename string) bool {
 
 	err = json.Unmarshal([]byte(data), cfg)
 
+	file.Close()
+
 	if err != nil {
 		fmt.Println("Error parsing JSON Data.")
 
