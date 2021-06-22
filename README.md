@@ -22,6 +22,7 @@ The config file's default path is `/etc/pterowatch/pterowatch.conf` (this can be
 * `debug` => The debug level (1-4).
 * `reloadtime` => If above 0, will reload the configuration file and retrieve servers from the API every *x* seconds.
 * `addservers` => Whether or not to automatically add servers to the config from the Pterodactyl API.
+* `defenable` => The default enable boolean of a server added via the Pterodactyl API.
 * `defscantime` => The default scan time of a server added via the Pterodactyl API.
 * `defmaxfails` => The default max fails of a server added via the Pterodactyl API.
 * `defmaxrestarts` => The default max restarts of a server added via the Pterodactyl API.
