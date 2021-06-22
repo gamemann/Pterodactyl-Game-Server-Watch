@@ -3,8 +3,19 @@
 ## Description
 A tool programmed in Go to automatically restart 'hung' (game) servers via the Pterodactyl API (working since version 1.4.2). This only supports servers that respond to the [A2S_INFO](https://developer.valvesoftware.com/wiki/Server_queries#A2S_INFO) query (a Valve Master Server query). I am currently looking for a better way to detect if a server is hung, though.
 
+## Command Line Arguments
+There is only one command line argument/flag and it is `-cfg=<path>`. This argument/flag changes the path to the Pterowatch config file. The default value is `/etc/pterowatch/pterowatch.conf`.
+
+Examples include:
+
+```
+./pterowatch -cfg=/home/cdeacon/myconf.conf
+./pterowatch -cfg=~/myconf.conf
+./pterowatch -cfg=myconf.conf
+```
+
 ## Config File
-The config file's path is `/etc/pterowatch/pterowatch.conf`. This should be a JSON array including the API URL, token, and an array of servers to check against. The main options are the following:
+The config file's default path is `/etc/pterowatch/pterowatch.conf` (this can be changed with a command line argument/flag as seen above). This should be a JSON array including the API URL, token, and an array of servers to check against. The main options are the following:
 
 * `apiurl` => The Pterodactyl API URL (do not include the `/` at the end).
 * `token` => The bearer token to use when sending requests to the Pterodactyl API.
