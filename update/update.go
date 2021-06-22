@@ -148,7 +148,13 @@ func ReloadServers(timer *time.Ticker, cfg *config.Config) {
 			}
 
 			if newcfg.AddServers {
-				pterodactyl.AddServers(&newcfg)
+				cont := pterodactyl.AddServers(&newcfg)
+
+				if !cont {
+					fmt.Println("[ERR] Not updating server list due to error.")
+
+					continue
+				}
 			}
 
 			// Assign new values.
