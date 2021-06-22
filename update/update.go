@@ -52,7 +52,7 @@ func AddNewServers(newcfg *config.Config, cfg *config.Config) {
 				toadd = false
 
 				if cfg.DebugLevel > 2 {
-					fmt.Println("[D3] Found matching server (+ " + newsrv.IP + ":" + strconv.Itoa(newsrv.Port) + ":" + newsrv.UID + ") on Add Server check. Applying new configuration. Enabled: " + strconv.FormatBool(oldsrv.Enable) + " => " + strconv.FormatBool(newsrv.Enable) + ". Max fails: " + strconv.Itoa(oldsrv.MaxFails) + " => " + strconv.Itoa(newsrv.MaxFails) + ". Max Restarts: " + strconv.Itoa(oldsrv.MaxRestarts) + " => " + strconv.Itoa(newsrv.MaxRestarts) + ". Restart Int: " + strconv.Itoa(oldsrv.RestartInt) + " => " + strconv.Itoa(newsrv.RestartInt) + ". Scan Time: " + strconv.Itoa(oldsrv.ScanTime) + " => " + strconv.Itoa(newsrv.ScanTime) + ". Report Only: " + strconv.FormatBool(oldsrv.ReportOnly) + " => " + strconv.FormatBool(newsrv.ReportOnly) + ".")
+					fmt.Println("[D3] Found matching server (" + newsrv.IP + ":" + strconv.Itoa(newsrv.Port) + ":" + newsrv.UID + ") on Add Server check. Applying new configuration. Enabled: " + strconv.FormatBool(oldsrv.Enable) + " => " + strconv.FormatBool(newsrv.Enable) + ". Max fails: " + strconv.Itoa(oldsrv.MaxFails) + " => " + strconv.Itoa(newsrv.MaxFails) + ". Max Restarts: " + strconv.Itoa(oldsrv.MaxRestarts) + " => " + strconv.Itoa(newsrv.MaxRestarts) + ". Restart Int: " + strconv.Itoa(oldsrv.RestartInt) + " => " + strconv.Itoa(newsrv.RestartInt) + ". Scan Time: " + strconv.Itoa(oldsrv.ScanTime) + " => " + strconv.Itoa(newsrv.ScanTime) + ". Report Only: " + strconv.FormatBool(oldsrv.ReportOnly) + " => " + strconv.FormatBool(newsrv.ReportOnly) + ".")
 				}
 
 				// Update specific configuration.
