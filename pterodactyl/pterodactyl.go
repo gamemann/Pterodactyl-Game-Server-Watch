@@ -163,6 +163,8 @@ func AddServers(cfg *config.Config) bool {
 
 						if reportonly > 0 {
 							sta.ReportOnly = true
+						} else {
+							sta.ReportOnly = false
 						}
 					}
 
@@ -172,6 +174,8 @@ func AddServers(cfg *config.Config) bool {
 
 						if disable > 0 {
 							sta.Enable = false
+						} else {
+							sta.Enable = true
 						}
 					}
 				}
