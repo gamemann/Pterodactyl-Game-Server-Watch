@@ -105,7 +105,7 @@ The following strings are replaced inside of the `contents` string before the we
 #### Defaults
 Here are the Discord web hook's default values.
 
-* `contents` => \*\*SERVER DOWN\*\*\\n\*\*Name\*\* => {NAME}\\n- \*\*IP\*\* => {IP}:{PORT}\\n- \*\*Fail Count\*\* => {FAILS}/{MAXFAILS}\\n\*\*Restart Count\*\* => {RESTARTS}/{MAXRESTARTS}\\n\\nScanning again in \*{RESTARTINT}\* seconds...
+* `contents` => \*\*SERVER DOWN\*\*\\n- \*\*Name\*\* => {NAME}\\n- \*\*IP\*\* => {IP}:{PORT}\\n- \*\*Fail Count\*\* => {FAILS}/{MAXFAILS}\\n- \*\*Restart Count\*\* => {RESTARTS}/{MAXRESTARTS}\\n\\nScanning again in \*{RESTARTINT}\* seconds...
 * `username` => Pterowatch
 * `avatarurl` => *empty* (default)
 
