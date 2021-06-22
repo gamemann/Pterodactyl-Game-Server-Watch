@@ -17,6 +17,8 @@ type Tuple struct {
 	UID  string
 }
 
+var updateticker *time.Ticker
+
 func AddNewServers(newcfg *config.Config, cfg *config.Config) {
 	// Loop through all new servers.
 	for i, newsrv := range newcfg.Servers {
@@ -142,6 +144,23 @@ func ReloadServers(timer *time.Ticker, cfg *config.Config) {
 			cfg.DebugLevel = newcfg.DebugLevel
 			cfg.AddServers = newcfg.AddServers
 
+			// If reload time is different, recreate reload timer.
+			if cfg.ReloadTime != newcfg.ReloadTime {
+				if updateticker != nil {
+					updateticker.Stop()
+				}
+
+				if cfg.DebugLevel > 2 {
+					fmt.Println("[D3] Recreating update timer due to updated reload time (" + strconv.Itoa(cfg.ReloadTime) + " => " + strconv.Itoa(newcfg.ReloadTime) + ").")
+				}
+
+				// Create repeating timer.
+				updateticker = time.NewTicker(time.Duration(newcfg.ReloadTime) * time.Second)
+				go ReloadServers(updateticker, cfg)
+			}
+
+			cfg.ReloadTime = newcfg.ReloadTime
+
 			// Level 2 debug message.
 			if cfg.DebugLevel > 1 {
 				fmt.Println("[D2] Updating server list.")
@@ -174,6 +193,6 @@ func Init(cfg *config.Config) {
 	}
 
 	// Create repeating timer.
-	ticker := time.NewTicker(time.Duration(cfg.ReloadTime) * time.Second)
-	go ReloadServers(ticker, cfg)
+	updateticker = time.NewTicker(time.Duration(cfg.ReloadTime) * time.Second)
+	go ReloadServers(updateticker, cfg)
 }
