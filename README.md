@@ -47,6 +47,7 @@ If you have the `addservers` setting set to true (servers are automatically retr
 ## Server Options/Array
 This array is used to manually add servers to watch. The `servers` array should contain the following items:
 
+* `name` => The server's name.
 * `enable` => If true, this server will be scanned.
 * `ip` => The IP to send A2S_INFO requests to.
 * `port` => The port to send A2S_INFO requests to.
@@ -99,6 +100,7 @@ The following strings are replaced inside of the `contents` string before the we
 * `{UID}` => The server's UID from the config file/Pterodactyl API.
 * `{SCANTIME}` => The server's configured scan time.
 * `{RESTARTINT}` => The server's configured restart interval.
+* `{NAME}` => The server's name.
 
 #### Defaults
 Here are the Discord web hook's default values.
