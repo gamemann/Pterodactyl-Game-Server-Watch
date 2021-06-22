@@ -141,7 +141,7 @@ You may use `git` and `go build` to build this project and produce a binary. I'd
 cd <Path To One $GOPATH>
 git clone https://github.com/gamemann/Pterodactyl-Game-Server-Watch.git
 cd Pterodactyl-Game-Server-Watch
-go build
+go build -o pterowatch
 ```
 
 ## Credits
