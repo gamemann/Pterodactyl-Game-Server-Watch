@@ -12,6 +12,8 @@ import (
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/query"
 )
 
+var tickers []*time.Ticker
+
 // Timer function.
 func ServerWatch(srvidx int, timer *time.Ticker, fails *int, restarts *int, nextscan *int64, conn *net.UDPConn, cfg *config.Config) {
 	destroy := make(chan struct{})
@@ -23,7 +25,6 @@ func ServerWatch(srvidx int, timer *time.Ticker, fails *int, restarts *int, next
 
 			// Check if container status is 'on'.
 			if !pterodactyl.CheckStatus(cfg, srv.UID) {
-
 				continue
 			}
 
@@ -149,10 +150,20 @@ func ServerWatch(srvidx int, timer *time.Ticker, fails *int, restarts *int, next
 	}
 }
 
-func HandleServers(cfg *config.Config) {
+func HandleServers(cfg *config.Config, update bool) {
+	// Before anything, destroy any existing tickers.
+	for _, tick := range tickers {
+		if tick != nil {
+			tick.Stop()
+		}
+	}
+
+	// Empty tickets list.
+	tickers = []*time.Ticker{}
+
 	// Loop through each container from the config.
 	for i, srv := range cfg.Servers {
-		if cfg.DebugLevel > 0 {
+		if cfg.DebugLevel > 0 && !update {
 			fmt.Println("[D1] Adding server " + srv.IP + ":" + strconv.Itoa(srv.Port) + " with UID " + srv.UID + ". Auto Add => " + strconv.FormatBool(srv.ViaAPI) + ". Scan time => " + strconv.Itoa(srv.ScanTime) + ". Max Fails => " + strconv.Itoa(srv.MaxFails) + ". Max Restarts => " + strconv.Itoa(srv.MaxRestarts) + ". Restart Interval => " + strconv.Itoa(srv.RestartInt) + ". Enabled => " + strconv.FormatBool(srv.Enable) + ".")
 		}
 
@@ -180,11 +191,18 @@ func HandleServers(cfg *config.Config) {
 			fmt.Println("Error creating UDP connection for " + srv.IP + ":" + strconv.Itoa(srv.Port))
 			fmt.Println(err)
 
-			return
+			continue
+		}
+
+		if cfg.DebugLevel > 3 {
+			fmt.Println("[D4] Creating timer for " + srv.IP + ":" + strconv.Itoa(srv.Port) + ":" + srv.UID + ".")
 		}
 
 		// Create repeating timer.
 		ticker := time.NewTicker(time.Duration(stime) * time.Second)
 		go ServerWatch(i, ticker, &fails, &restarts, &nextscan, conn, cfg)
+
+		// Add ticker to tickers variable.
+		tickers = append(tickers, ticker)
 	}
 }

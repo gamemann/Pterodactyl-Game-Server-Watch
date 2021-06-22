@@ -31,8 +31,10 @@ type Config struct {
 	Token      string   `json:"token"`
 	AddServers bool     `json:"addservers"`
 	DebugLevel int      `json:"debug"`
+	ReloadTime int      `json:"reloadtime"`
 	Servers    []Server `json:"servers"`
 	Misc       []Misc   `json:"misc"`
+	ConfLoc    string
 }
 
 // Reads a config file based off of the file name (string) and returns a Config struct.

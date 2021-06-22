@@ -11,6 +11,7 @@ import (
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/config"
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/pterodactyl"
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/servers"
+	"github.com/gamemann/Pterodactyl-Game-Server-Watch/update"
 )
 
 func main() {
@@ -34,7 +35,13 @@ func main() {
 	}
 
 	// Handle all servers (create timers, etc.).
-	servers.HandleServers(&cfg)
+	servers.HandleServers(&cfg, false)
+
+	// Set config file for use later (e.g. updating/reloading).
+	cfg.ConfLoc = configFile
+
+	// Initialize updater/reloader.
+	update.Init(&cfg)
 
 	// Signal.
 	sigc := make(chan os.Signal, 1)
