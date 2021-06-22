@@ -22,19 +22,13 @@ The config file's default path is `/etc/pterowatch/pterowatch.conf` (this can be
 * `debug` => The debug level (1-4).
 * `reloadtime` => If above 0, will reload the configuration file and retrieve servers from the API every *x* seconds.
 * `addservers` => Whether or not to automatically add servers to the config from the Pterodactyl API.
-* `servers` => An array of servers to check against (read below).
-
-The `servers` array should contain the following items:
-
-* `enable` => If true, this server will be scanned.
-* `ip` => The IP to send A2S_INFO requests to.
-* `port` => The port to send A2S_INFO requests to.
-* `uid` => The server's Pterodactyl UID.
-* `scantime` => How often to scan a game server in seconds.
-* `maxfails` => The maximum amount of A2S_INFO response failures before attempting to restart the game server.
-* `maxrestarts` => The maximum amount of times we attempt to restart the server until A2S_INFO responses start coming back successfully.
-* `restartint` => When a game server is restarted, the program won't start scanning the server until *x* seconds later.
-* `reportonly` => If set, only debugging and misc options will be executed when a server is detected as down (e.g. no restart).
+* `defscantime` => The default scan time of a server added via the Pterodactyl API.
+* `defmaxfails` => The default max fails of a server added via the Pterodactyl API.
+* `defmaxrestarts` => The default max restarts of a server added via the Pterodactyl API.
+* `defrestartint` => The default restart interval of a server added via the Pterodactyl API.
+* `defreportonly` => The default report only boolean of a server added via the Pterodactyl API.
+* `servers` => An array of servers to watch (read below).
+* `misc` => An array of misc options (read below).
 
 ## Egg Variable Overrides
 If you have the `addservers` setting set to true (servers are automatically retrieved via the Pterodactyl API), you may use the following egg variables as overrides to the specific server's config.
@@ -48,7 +42,20 @@ If you have the `addservers` setting set to true (servers are automatically retr
 * `PTEROWATCH_RESTARTINT` => If not empty, will override the restart interval with this value for the specific server.
 * `PTEROWATCH_REPORTONLY` => If not empty, will override report only with this value for the specific server.
 
-## Misc Options
+## Server Options/Array
+This array is used to manually add servers to watch. The `servers` array should contain the following items:
+
+* `enable` => If true, this server will be scanned.
+* `ip` => The IP to send A2S_INFO requests to.
+* `port` => The port to send A2S_INFO requests to.
+* `uid` => The server's Pterodactyl UID.
+* `scantime` => How often to scan a game server in seconds.
+* `maxfails` => The maximum amount of A2S_INFO response failures before attempting to restart the game server.
+* `maxrestarts` => The maximum amount of times we attempt to restart the server until A2S_INFO responses start coming back successfully.
+* `restartint` => When a game server is restarted, the program won't start scanning the server until *x* seconds later.
+* `reportonly` => If set, only debugging and misc options will be executed when a server is detected as down (e.g. no restart).
+
+## Misc Options/Array
 This tool supports misc options which are configured under the `misc` array inside of the config file. The only event supported for this at the moment is when a server is restarted from the tool. However, other events may be added in the future. An example may be found below.
 
 ```JSON
