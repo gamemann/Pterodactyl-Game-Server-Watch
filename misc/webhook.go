@@ -15,10 +15,9 @@ type AllowMentions struct {
 }
 
 type DiscordWH struct {
-	Contents      string        `json:"content"`
-	Username      string        `json:"username"`
-	AvatarURL     string        `json:"avatarurl"`
-	AllowMentions AllowMentions `json:"allowed_mentions"`
+	Contents  string `json:"content"`
+	Username  string `json:"username"`
+	AvatarURL string `json:"avatarurl"`
 }
 
 type SlackWH struct {
@@ -32,20 +31,6 @@ func DiscordWebHook(url string, contents string, username string, avatarurl stri
 	data.Contents = contents
 	data.Username = username
 	data.AvatarURL = avatarurl
-
-	if allowmentions {
-		data.AllowMentions = AllowMentions{
-			Roles:    true,
-			Users:    true,
-			Everyone: true,
-		}
-	} else {
-		data.AllowMentions = AllowMentions{
-			Roles:    false,
-			Users:    false,
-			Everyone: false,
-		}
-	}
 
 	// Convert interface to JSON data string.
 	datajson, err := json.Marshal(data)
