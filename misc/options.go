@@ -58,7 +58,7 @@ func HandleMisc(cfg *config.Config, srvidx int, fails int, restarts int) {
 
 				// Look for allowed mentions override.
 				if v.Data.(map[string]interface{})["allowedmentions"] != nil {
-					allowedmentions = v.Data.(map[string]interface{})["avatarurl"].(bool)
+					allowedmentions = v.Data.(map[string]interface{})["allowedmentions"].(bool)
 				}
 
 				// Replace variables in strings.
