@@ -131,17 +131,7 @@ func ReloadServers(timer *time.Ticker, cfg *config.Config) {
 			newcfg := config.Config{}
 
 			// Set default values.
-			newcfg.AddServers = false
-			newcfg.DebugLevel = 0
-			newcfg.ReloadTime = 500
-
-			newcfg.DefEnable = true
-			newcfg.DefScanTime = 5
-			newcfg.DefMaxFails = 10
-			newcfg.DefMaxRestarts = 2
-			newcfg.DefRestartInt = 120
-			newcfg.DefReportOnly = false
-			newcfg.DefA2STimeout = 1
+			newcfg.SetDefaults()
 
 			success := config.ReadConfig(&newcfg, cfg.ConfLoc)
 

@@ -82,3 +82,19 @@ func ReadConfig(cfg *Config, filename string) bool {
 
 	return true
 }
+
+// Sets config's default values.
+func (cfg *Config) SetDefaults() {
+	// Set config defaults.
+	cfg.AddServers = false
+	cfg.DebugLevel = 0
+	cfg.ReloadTime = 500
+
+	cfg.DefEnable = true
+	cfg.DefScanTime = 5
+	cfg.DefMaxFails = 10
+	cfg.DefMaxRestarts = 2
+	cfg.DefRestartInt = 120
+	cfg.DefReportOnly = false
+	cfg.DefA2STimeout = 1
+}
