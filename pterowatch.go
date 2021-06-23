@@ -27,7 +27,7 @@ func main() {
 	cfg.SetDefaults()
 
 	// Attempt to read config.
-	config.ReadConfig(&cfg, *configFile)
+	cfg.ReadConfig(*configFile)
 
 	// Level 1 debug.
 	if cfg.DebugLevel > 0 {

@@ -49,7 +49,7 @@ type Config struct {
 }
 
 // Reads a config file based off of the file name (string) and returns a Config struct.
-func ReadConfig(cfg *Config, filename string) bool {
+func (cfg *Config) ReadConfig(filename string) bool {
 	file, err := os.Open(filename)
 
 	if err != nil {
