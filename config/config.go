@@ -18,6 +18,7 @@ type Server struct {
 	MaxRestarts int    `json:"maxrestarts"`
 	RestartInt  int    `json:"restartint"`
 	ReportOnly  bool   `json:"reportonly"`
+	A2STimeout  int    `json:"a2stimeout"`
 	ViaAPI      bool
 }
 
@@ -41,6 +42,7 @@ type Config struct {
 	DefMaxRestarts int      `json:"defmaxrestarts"`
 	DefRestartInt  int      `json:"defrestartint"`
 	DefReportOnly  bool     `json:"defreportonly"`
+	DefA2STimeout  int      `json:"defa2stimeout"`
 	Servers        []Server `json:"servers"`
 	Misc           []Misc   `json:"misc"`
 	ConfLoc        string
