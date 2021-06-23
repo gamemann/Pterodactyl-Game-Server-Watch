@@ -29,6 +29,7 @@ The config file's default path is `/etc/pterowatch/pterowatch.conf` (this can be
 * `defmaxrestarts` => The default max restarts of a server added via the Pterodactyl API.
 * `defrestartint` => The default restart interval of a server added via the Pterodactyl API.
 * `defreportonly` => The default report only boolean of a server added via the Pterodactyl API.
+* `defmentions` => The default mentions JSON for servers added via the Pterodactyl API.
 * `servers` => An array of servers to watch (read below).
 * `misc` => An array of misc options (read below).
 
@@ -43,6 +44,7 @@ If you have the `addservers` setting set to true (servers are automatically retr
 * `PTEROWATCH_MAXRESTARTS` => If not empty, will override the maximum restarts with this value for the specific server.
 * `PTEROWATCH_RESTARTINT` => If not empty, will override the restart interval with this value for the specific server.
 * `PTEROWATCH_REPORTONLY` => If not empty, will override report only with this value for the specific server.
+* `PTEROWATCH_MENTIONS` => If not empty, will override the mentions JSON string with this value for the specific server.
 
 ## Server Options/Array
 This array is used to manually add servers to watch. The `servers` array should contain the following items:
@@ -57,6 +59,41 @@ This array is used to manually add servers to watch. The `servers` array should 
 * `maxrestarts` => The maximum amount of times we attempt to restart the server until A2S_INFO responses start coming back successfully.
 * `restartint` => When a game server is restarted, the program won't start scanning the server until *x* seconds later.
 * `reportonly` => If set, only debugging and misc options will be executed when a server is detected as down (e.g. no restart).
+* `mentions` => A JSON string that parses all custom role and user mentions inside of web hooks for this server.
+
+## Server Mentions Array
+The server `mentions` JSON string's parsed JSON output includes a `data` list with each item including a `role` (boolean indicating whether we're mentioning a role) and `id` (the ID of the role or user in string format).
+
+Here are some examples:
+
+```JSON
+{
+        "data": [
+                {
+                        "role": true,
+                        "id": "1293959919293959192"
+                },
+                {
+                        "role": false,
+                        "id": "1959192351293954123"
+                }
+        ]
+}
+```
+
+This is what it looks like inside of the mentions string.
+
+```JSON
+{
+        "servers": [
+                {
+                        "mentions": "{\"data\":[{\"role\": true,\"id\": \"1293959919293959192\"},{\"role\": false,\"id\": \"1959192351293954123\"}]}"
+                }
+        ]
+}
+```
+
+The above will replace the `{MENTIONS}` text inside of the web hook's contents with `<@&1293959919293959192>, <@1959192351293954123>`.
 
 ## Misc Options/Array
 This tool supports misc options which are configured under the `misc` array inside of the config file. The only event supported for this at the moment is when a server is restarted from the tool. However, other events may be added in the future. An example may be found below.
@@ -85,6 +122,7 @@ Please look at the following data items:
 * `contents` => The contents of the web hook.
 * `username` => The username the web hook sends as (**only** Discord).
 * `avatarurl` => The avatar URL used with the web hook (**only** Discord).
+* `mentions` => An array including a `roles` item as a boolean allowing custom role mentions and `users` item as a boolean allowing custom user mentions.
 
 **Note** - Please copy the full web hook URL including `https://...`.
 
@@ -101,6 +139,7 @@ The following strings are replaced inside of the `contents` string before the we
 * `{SCANTIME}` => The server's configured scan time.
 * `{RESTARTINT}` => The server's configured restart interval.
 * `{NAME}` => The server's name.
+* `{MENTIONS}` => If there are mentions, it will print them in `<id>, ...` format in this replacement.
 
 #### Defaults
 Here are the Discord web hook's default values.
