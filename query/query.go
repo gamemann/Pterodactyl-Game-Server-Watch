@@ -41,10 +41,10 @@ func SendRequest(conn *net.UDPConn) {
 
 // Checks for A2S_INFO response. Returns true if it receives a response. Returns false otherwise.
 func CheckResponse(conn *net.UDPConn, srv config.Server) bool {
-	buffer := make([]byte, 256)
+	buffer := make([]byte, 1024)
 
-	// Set read timeout (1 second).
-	conn.SetReadDeadline(time.Now().Add(time.Duration(srv.A2STimeout)))
+	// Set read timeout.
+	conn.SetReadDeadline(time.Now().Add(time.Second * time.Duration(srv.A2STimeout)))
 
 	_, _, err := conn.ReadFromUDP(buffer)
 
