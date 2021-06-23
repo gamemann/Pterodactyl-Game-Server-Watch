@@ -103,6 +103,18 @@ func HandleMisc(cfg *config.Config, srvidx int, fails int, restarts int) {
 						goto skipment
 					}
 
+					if mentdata.(map[string]interface{})["data"] == nil {
+						fmt.Println("[ERR] Mentions string missing data list for " + srv.UID + " (" + srv.Name + ").")
+
+						goto skipment
+					}
+
+					if _, ok := mentdata.(map[string]interface{})["data"].([]interface{}); !ok {
+						fmt.Println("[ERR] Mentions string's data item not a list for " + srv.UID + " (" + srv.Name + ").")
+
+						goto skipment
+					}
+
 					len := len(mentdata.(map[string]interface{})["data"].([]interface{}))
 
 					// Loop through each item.
@@ -111,6 +123,19 @@ func HandleMisc(cfg *config.Config, srvidx int, fails int, restarts int) {
 
 						// Check to ensure we have both elements/items.
 						if item["role"] == nil || item["id"] == nil {
+							continue
+						}
+
+						// Check types.
+						if _, ok := item["role"].(bool); !ok {
+							fmt.Println("[ERR] Mentions string's role field is not a boolean for " + srv.UID + " (" + srv.Name + ").")
+
+							continue
+						}
+
+						if _, ok := item["id"].(string); !ok {
+							fmt.Println("[Err] Mentions string's id field is not a string for " + srv.UID + " (" + srv.Name + ").")
+
 							continue
 						}
 
