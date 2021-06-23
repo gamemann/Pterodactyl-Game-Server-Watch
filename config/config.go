@@ -61,6 +61,8 @@ func (cfg *Config) ReadConfig(filename string) bool {
 		return false
 	}
 
+	defer file.Close()
+
 	stat, _ := file.Stat()
 
 	data := make([]byte, stat.Size())
@@ -75,8 +77,6 @@ func (cfg *Config) ReadConfig(filename string) bool {
 	}
 
 	err = json.Unmarshal([]byte(data), cfg)
-
-	file.Close()
 
 	if err != nil {
 		fmt.Println("[ERR] Cannot parse JSON Data.")
