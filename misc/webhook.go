@@ -6,12 +6,13 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/gamemann/Pterodactyl-Game-Server-Watch/config"
 )
 
 type AllowMentions struct {
-	Roles    bool `json:"roles"`
-	Users    bool `json:"users"`
-	Everyone bool `json:"everyone"`
+	Roles bool `json:"roles"`
+	Users bool `json:"users"`
 }
 
 type DiscordWH struct {
@@ -24,7 +25,7 @@ type SlackWH struct {
 	Text string `json:"text"`
 }
 
-func DiscordWebHook(url string, contents string, username string, avatarurl string, allowmentions bool) bool {
+func DiscordWebHook(url string, contents string, username string, avatarurl string, allowmentions AllowMentions, srv config.Server) bool {
 	var data DiscordWH
 
 	// Build out JSON/form data for Discord web hook.

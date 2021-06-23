@@ -7,7 +7,7 @@ import (
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/config"
 )
 
-func FormatContents(formatstr *string, fails int, restarts int, srv *config.Server) {
+func FormatContents(app string, formatstr *string, fails int, restarts int, srv config.Server, mentionstr string) {
 	*formatstr = strings.ReplaceAll(*formatstr, "{IP}", srv.IP)
 	*formatstr = strings.ReplaceAll(*formatstr, "{PORT}", strconv.Itoa(srv.Port))
 	*formatstr = strings.ReplaceAll(*formatstr, "{FAILS}", strconv.Itoa(fails))
@@ -18,4 +18,5 @@ func FormatContents(formatstr *string, fails int, restarts int, srv *config.Serv
 	*formatstr = strings.ReplaceAll(*formatstr, "{SCANTIME}", strconv.Itoa(srv.ScanTime))
 	*formatstr = strings.ReplaceAll(*formatstr, "{RESTARTINT}", strconv.Itoa(srv.RestartInt))
 	*formatstr = strings.ReplaceAll(*formatstr, "{NAME}", srv.Name)
+	*formatstr = strings.ReplaceAll(*formatstr, "{MENTIONS}", mentionstr)
 }

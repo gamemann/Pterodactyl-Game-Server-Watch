@@ -19,6 +19,7 @@ type Server struct {
 	RestartInt  int    `json:"restartint"`
 	ReportOnly  bool   `json:"reportonly"`
 	A2STimeout  int    `json:"a2stimeout"`
+	Mentions    string `json:"mentions"`
 	ViaAPI      bool
 }
 
@@ -43,6 +44,7 @@ type Config struct {
 	DefRestartInt  int      `json:"defrestartint"`
 	DefReportOnly  bool     `json:"defreportonly"`
 	DefA2STimeout  int      `json:"defa2stimeout"`
+	DefMentions    string   `json:"defmentions"`
 	Servers        []Server `json:"servers"`
 	Misc           []Misc   `json:"misc"`
 	ConfLoc        string

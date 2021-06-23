@@ -1,7 +1,9 @@
 package misc
 
 import (
+	"encoding/json"
 	"fmt"
+	"math/big"
 	"strconv"
 
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/config"
@@ -24,7 +26,10 @@ func HandleMisc(cfg *config.Config, srvidx int, fails int, restarts int) {
 				contentpre := "**SERVER DOWN**\n- **Name** => {NAME}\n- **IP** => {IP}:{PORT}\n- **Fail Count** => {FAILS}/{MAXFAILS}\n- **Restart Count** => {RESTARTS}/{MAXRESTARTS}\n\nScanning again in *{RESTARTINT}* seconds..."
 				username := "Pterowatch"
 				avatarurl := ""
-				allowedmentions := false
+				allowedmentions := AllowMentions{
+					Roles: false,
+					Users: false,
+				}
 				app := "discord"
 
 				// Look for app override.
@@ -57,24 +62,99 @@ func HandleMisc(cfg *config.Config, srvidx int, fails int, restarts int) {
 				}
 
 				// Look for allowed mentions override.
-				if v.Data.(map[string]interface{})["allowedmentions"] != nil {
-					allowedmentions = v.Data.(map[string]interface{})["allowedmentions"].(bool)
+				if v.Data.(map[string]interface{})["mentions"] != nil {
+					mentdata := v.Data.(map[string]interface{})["mentions"].(map[string]interface{})
+
+					roles := false
+					users := false
+
+					if mentdata["roles"] != nil {
+						roles = mentdata["roles"].(bool)
+					}
+
+					if mentdata["users"] != nil {
+						users = mentdata["users"].(bool)
+					}
+
+					allowedmentions.Roles = roles
+					allowedmentions.Users = users
 				}
+
+				// Handle mentions.
+				mentionstr := ""
+
+				if (allowedmentions.Roles || allowedmentions.Users) && len(srv.Mentions) > 0 {
+					if cfg.DebugLevel > 1 {
+						fmt.Println("[D2] Parsing mention data for " + srv.UID + " ( " + srv.Name + ").")
+					}
+
+					var mentdata interface{}
+
+					err := json.Unmarshal([]byte(srv.Mentions), &mentdata)
+
+					if cfg.DebugLevel > 3 {
+						fmt.Println("[D4] Mention JSON => " + srv.Mentions + ".")
+					}
+
+					if err != nil {
+						fmt.Println("[ERR] Failed to parse JSON mention data for server " + srv.UID + " (" + srv.Name + ").")
+						fmt.Println(err)
+
+						goto skipment
+					}
+
+					len := len(mentdata.(map[string]interface{})["data"].([]interface{}))
+
+					// Loop through each item.
+					for i, m := range mentdata.(map[string]interface{})["data"].([]interface{}) {
+						item := m.(map[string]interface{})
+
+						// Check to ensure we have both elements/items.
+						if item["role"] == nil || item["id"] == nil {
+							continue
+						}
+
+						// For security, we want to parse the values as big integers (float64 is also too small for IDs).
+						id := big.Int{}
+						id.SetString(item["id"].(string), 10)
+
+						// Check for role.
+						if item["role"].(bool) && allowedmentions.Roles {
+							mentionstr += "<@&" + id.String() + ">"
+						}
+
+						// Check for user.
+						if !item["role"].(bool) && allowedmentions.Users {
+							mentionstr += "<@" + id.String() + ">"
+						}
+
+						// Check to see if we need a comma.
+						if i != (len - 1) {
+							mentionstr += ", "
+						}
+					}
+
+					if cfg.DebugLevel > 3 {
+						fmt.Println("[D4] Mention string => " + mentionstr + " for " + srv.UID + " (" + srv.Name + ").")
+					}
+				}
+
+			skipment:
 
 				// Replace variables in strings.
 				contents := contentpre
-				FormatContents(&contents, fails, restarts, &srv)
+				FormatContents(app, &contents, fails, restarts, srv, mentionstr)
 
 				// Level 3 debug.
 				if cfg.DebugLevel > 2 {
-					fmt.Println("[D3] Loaded web hook with App => " + app + ". URL => " + url + ". Contents => " + contents + ". Username => " + username + ". Avatar URL => " + avatarurl + ". Allowed Mentions => " + strconv.FormatBool(allowedmentions) + ".")
+					fmt.Println("[D3] Loaded web hook with App => " + app + ". URL => " + url + ". Contents => " + contents + ". Username => " + username + ". Avatar URL => " + avatarurl + ". Mentions => Roles:" + strconv.FormatBool(allowedmentions.Roles) + "; Users:" + strconv.FormatBool(allowedmentions.Users) + ".")
 				}
 
 				// Submit web hook.
 				if app == "slack" {
 					SlackWebHook(url, contents)
 				} else {
-					DiscordWebHook(url, contents, username, avatarurl, allowedmentions)
+					DiscordWebHook(url, contents, username, avatarurl, allowedmentions, srv)
 				}
 			}
 		}
