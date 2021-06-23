@@ -8,6 +8,7 @@ import (
 
 // Server struct used for each server config.
 type Server struct {
+	Name        string `json:"name"`
 	Enable      bool   `json:"enable"`
 	IP          string `json:"ip"`
 	Port        int    `json:"port"`
@@ -17,6 +18,8 @@ type Server struct {
 	MaxRestarts int    `json:"maxrestarts"`
 	RestartInt  int    `json:"restartint"`
 	ReportOnly  bool   `json:"reportonly"`
+	A2STimeout  int    `json:"a2stimeout"`
+	Mentions    string `json:"mentions"`
 	ViaAPI      bool
 }
 
@@ -40,20 +43,25 @@ type Config struct {
 	DefMaxRestarts int      `json:"defmaxrestarts"`
 	DefRestartInt  int      `json:"defrestartint"`
 	DefReportOnly  bool     `json:"defreportonly"`
+	DefA2STimeout  int      `json:"defa2stimeout"`
+	DefMentions    string   `json:"defmentions"`
 	Servers        []Server `json:"servers"`
 	Misc           []Misc   `json:"misc"`
 	ConfLoc        string
 }
 
 // Reads a config file based off of the file name (string) and returns a Config struct.
-func ReadConfig(cfg *Config, filename string) bool {
+func (cfg *Config) ReadConfig(filename string) bool {
 	file, err := os.Open(filename)
 
 	if err != nil {
-		fmt.Println("Error opening config file.")
+		fmt.Println("[ERR] Cannot open config file.")
+		fmt.Println(err)
 
 		return false
 	}
+
+	defer file.Close()
 
 	stat, _ := file.Stat()
 
@@ -62,7 +70,8 @@ func ReadConfig(cfg *Config, filename string) bool {
 	_, err = file.Read(data)
 
 	if err != nil {
-		fmt.Println("Error reading config file.")
+		fmt.Println("[ERR] Cannot read config file.")
+		fmt.Println(err)
 
 		return false
 	}
@@ -70,10 +79,27 @@ func ReadConfig(cfg *Config, filename string) bool {
 	err = json.Unmarshal([]byte(data), cfg)
 
 	if err != nil {
-		fmt.Println("Error parsing JSON Data.")
+		fmt.Println("[ERR] Cannot parse JSON Data.")
+		fmt.Println(err)
 
 		return false
 	}
 
 	return true
+}
+
+// Sets config's default values.
+func (cfg *Config) SetDefaults() {
+	// Set config defaults.
+	cfg.AddServers = false
+	cfg.DebugLevel = 0
+	cfg.ReloadTime = 500
+
+	cfg.DefEnable = true
+	cfg.DefScanTime = 5
+	cfg.DefMaxFails = 10
+	cfg.DefMaxRestarts = 2
+	cfg.DefRestartInt = 120
+	cfg.DefReportOnly = false
+	cfg.DefA2STimeout = 1
 }

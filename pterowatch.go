@@ -23,20 +23,11 @@ func main() {
 	// Create config struct.
 	cfg := config.Config{}
 
-	// Set some defaults.
-	cfg.AddServers = false
-	cfg.DebugLevel = 0
-	cfg.ReloadTime = 500
-
-	cfg.DefEnable = true
-	cfg.DefScanTime = 5
-	cfg.DefMaxFails = 10
-	cfg.DefMaxRestarts = 2
-	cfg.DefRestartInt = 120
-	cfg.DefReportOnly = false
+	// Set config defaults.
+	cfg.SetDefaults()
 
 	// Attempt to read config.
-	config.ReadConfig(&cfg, *configFile)
+	cfg.ReadConfig(*configFile)
 
 	// Level 1 debug.
 	if cfg.DebugLevel > 0 {
@@ -45,7 +36,7 @@ func main() {
 
 	// Level 2 debug.
 	if cfg.DebugLevel > 1 {
-		fmt.Println("[D2] Config default server values. Enable => " + strconv.FormatBool(cfg.DefEnable) + ". Scan time => " + strconv.Itoa(cfg.DefScanTime) + ". Max Fails => " + strconv.Itoa(cfg.DefMaxFails) + ". Max Restarts => " + strconv.Itoa(cfg.DefMaxRestarts) + ". Restart Interval => " + strconv.Itoa(cfg.DefRestartInt) + ". Report Only => " + strconv.FormatBool(cfg.DefReportOnly) + ".")
+		fmt.Println("[D2] Config default server values. Enable => " + strconv.FormatBool(cfg.DefEnable) + ". Scan time => " + strconv.Itoa(cfg.DefScanTime) + ". Max Fails => " + strconv.Itoa(cfg.DefMaxFails) + ". Max Restarts => " + strconv.Itoa(cfg.DefMaxRestarts) + ". Restart Interval => " + strconv.Itoa(cfg.DefRestartInt) + ". Report Only => " + strconv.FormatBool(cfg.DefReportOnly) + ". A2S Timeout => " + strconv.Itoa(cfg.DefA2STimeout) + ". Mentions => " + cfg.DefMentions + ".")
 	}
 
 	// Check if we want to automatically add servers.

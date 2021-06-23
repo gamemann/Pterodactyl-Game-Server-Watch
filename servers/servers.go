@@ -32,11 +32,11 @@ func ServerWatch(srvidx int, timer *time.Ticker, fails *int, restarts *int, next
 			query.SendRequest(conn)
 
 			if cfg.DebugLevel > 2 {
-				fmt.Println("[D3][" + srv.IP + ":" + strconv.Itoa(srv.Port) + "] A2S_INFO sent.")
+				fmt.Println("[D3][" + srv.IP + ":" + strconv.Itoa(srv.Port) + "] A2S_INFO sent (" + srv.Name + ").")
 			}
 
 			// Check for response. If no response, increase fail count. Otherwise, reset fail count to 0.
-			if !query.CheckResponse(conn) {
+			if !query.CheckResponse(conn, srv) {
 				// Increase fail count.
 				*fails++
 				if cfg.DebugLevel > 1 {
@@ -69,7 +69,7 @@ func ServerWatch(srvidx int, timer *time.Ticker, fails *int, restarts *int, next
 
 					// Debug.
 					if cfg.DebugLevel > 0 {
-						fmt.Println("[D1][" + srv.IP + ":" + strconv.Itoa(srv.Port) + "] Server found down. Report Only => " + strconv.FormatBool(srv.ReportOnly) + ". Fail Count => " + strconv.Itoa(*fails) + ". Restart Count => " + strconv.Itoa(*restarts) + ".")
+						fmt.Println("[D1][" + srv.IP + ":" + strconv.Itoa(srv.Port) + "] Server found down. Report Only => " + strconv.FormatBool(srv.ReportOnly) + ". Fail Count => " + strconv.Itoa(*fails) + ". Restart Count => " + strconv.Itoa(*restarts) + " (" + srv.Name + ").")
 					}
 
 					events.OnServerDown(cfg, srvidx, *fails, *restarts)
@@ -103,7 +103,7 @@ func HandleServers(cfg *config.Config, update bool) {
 	// Loop through each container from the config.
 	for i, srv := range cfg.Servers {
 		if cfg.DebugLevel > 0 && !update {
-			fmt.Println("[D1] Adding server " + srv.IP + ":" + strconv.Itoa(srv.Port) + " with UID " + srv.UID + ". Auto Add => " + strconv.FormatBool(srv.ViaAPI) + ". Scan time => " + strconv.Itoa(srv.ScanTime) + ". Max Fails => " + strconv.Itoa(srv.MaxFails) + ". Max Restarts => " + strconv.Itoa(srv.MaxRestarts) + ". Restart Interval => " + strconv.Itoa(srv.RestartInt) + ". Report Only => " + strconv.FormatBool(srv.ReportOnly) + ". Enabled => " + strconv.FormatBool(srv.Enable) + ".")
+			fmt.Println("[D1] Adding server " + srv.IP + ":" + strconv.Itoa(srv.Port) + " with UID " + srv.UID + ". Auto Add => " + strconv.FormatBool(srv.ViaAPI) + ". Scan time => " + strconv.Itoa(srv.ScanTime) + ". Max Fails => " + strconv.Itoa(srv.MaxFails) + ". Max Restarts => " + strconv.Itoa(srv.MaxRestarts) + ". Restart Interval => " + strconv.Itoa(srv.RestartInt) + ". Report Only => " + strconv.FormatBool(srv.ReportOnly) + ". Enabled => " + strconv.FormatBool(srv.Enable) + ". Name => " + srv.Name + ". A2S Timeout => " + strconv.Itoa(srv.A2STimeout) + ". Mentions => " + srv.Mentions + ".")
 		}
 
 		// Check if server is enabled for scanning.
@@ -127,14 +127,14 @@ func HandleServers(cfg *config.Config, update bool) {
 		conn, err := query.CreateConnection(srv.IP, srv.Port)
 
 		if err != nil {
-			fmt.Println("Error creating UDP connection for " + srv.IP + ":" + strconv.Itoa(srv.Port))
+			fmt.Println("Error creating UDP connection for " + srv.IP + ":" + strconv.Itoa(srv.Port) + " ( " + srv.Name + ").")
 			fmt.Println(err)
 
 			continue
 		}
 
 		if cfg.DebugLevel > 3 {
-			fmt.Println("[D4] Creating timer for " + srv.IP + ":" + strconv.Itoa(srv.Port) + ":" + srv.UID + ".")
+			fmt.Println("[D4] Creating timer for " + srv.IP + ":" + strconv.Itoa(srv.Port) + ":" + srv.UID + " (" + srv.Name + ").")
 		}
 
 		// Create repeating timer.

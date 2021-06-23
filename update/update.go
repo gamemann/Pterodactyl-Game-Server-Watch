@@ -22,8 +22,8 @@ var updateticker *time.Ticker
 func AddNewServers(newcfg *config.Config, cfg *config.Config) {
 	// Loop through all new servers.
 	for i, newsrv := range newcfg.Servers {
-		if cfg.DebugLevel > 2 {
-			fmt.Println("[D3] Looking for " + newsrv.IP + ":" + strconv.Itoa(newsrv.Port) + ":" + newsrv.UID + " (" + strconv.Itoa(i) + ") inside of old configuration.")
+		if cfg.DebugLevel > 3 {
+			fmt.Println("[D4] Looking for " + newsrv.IP + ":" + strconv.Itoa(newsrv.Port) + ":" + newsrv.UID + " (" + strconv.Itoa(i) + ") inside of old configuration.")
 		}
 
 		toadd := true
@@ -42,8 +42,8 @@ func AddNewServers(newcfg *config.Config, cfg *config.Config) {
 			ot.Port = oldsrv.Port
 			ot.UID = oldsrv.UID
 
-			if cfg.DebugLevel > 2 {
-				fmt.Println("[D3] Comparing " + nt.IP + ":" + strconv.Itoa(nt.Port) + ":" + nt.UID + " == " + ot.IP + ":" + strconv.Itoa(ot.Port) + ":" + ot.UID + " (" + strconv.Itoa(j) + ").")
+			if cfg.DebugLevel > 4 {
+				fmt.Println("[D5] Comparing " + nt.IP + ":" + strconv.Itoa(nt.Port) + ":" + nt.UID + " == " + ot.IP + ":" + strconv.Itoa(ot.Port) + ":" + ot.UID + " (" + strconv.Itoa(j) + ").")
 			}
 
 			// Now compare.
@@ -51,8 +51,8 @@ func AddNewServers(newcfg *config.Config, cfg *config.Config) {
 				// We don't have to insert this server into the slice.
 				toadd = false
 
-				if cfg.DebugLevel > 3 {
-					fmt.Println("[D4] Found matching server on Add Server check. Applying new configuration. Enabled: " + strconv.FormatBool(oldsrv.Enable) + " => " + strconv.FormatBool(newsrv.Enable) + ". Max fails: " + strconv.Itoa(oldsrv.MaxFails) + " => " + strconv.Itoa(newsrv.MaxFails) + ". Max Restarts: " + strconv.Itoa(oldsrv.MaxRestarts) + " => " + strconv.Itoa(newsrv.MaxRestarts) + ". Restart Int: " + strconv.Itoa(oldsrv.RestartInt) + " => " + strconv.Itoa(newsrv.RestartInt) + ". Scan Time: " + strconv.Itoa(oldsrv.ScanTime) + " => " + strconv.Itoa(newsrv.ScanTime) + ". Report Only: " + strconv.FormatBool(oldsrv.ReportOnly) + " => " + strconv.FormatBool(newsrv.ReportOnly) + ".")
+				if cfg.DebugLevel > 2 {
+					fmt.Println("[D3] Found matching server (" + newsrv.IP + ":" + strconv.Itoa(newsrv.Port) + ":" + newsrv.UID + ") on Add Server check. Applying new configuration. Name => " + newsrv.Name + ". Enabled: " + strconv.FormatBool(oldsrv.Enable) + " => " + strconv.FormatBool(newsrv.Enable) + ". Max fails: " + strconv.Itoa(oldsrv.MaxFails) + " => " + strconv.Itoa(newsrv.MaxFails) + ". Max Restarts: " + strconv.Itoa(oldsrv.MaxRestarts) + " => " + strconv.Itoa(newsrv.MaxRestarts) + ". Restart Int: " + strconv.Itoa(oldsrv.RestartInt) + " => " + strconv.Itoa(newsrv.RestartInt) + ". Scan Time: " + strconv.Itoa(oldsrv.ScanTime) + " => " + strconv.Itoa(newsrv.ScanTime) + ". Report Only: " + strconv.FormatBool(oldsrv.ReportOnly) + " => " + strconv.FormatBool(newsrv.ReportOnly) + ". A2S Timeout: " + strconv.Itoa(oldsrv.A2STimeout) + " => " + strconv.Itoa(newsrv.A2STimeout) + ". Mentions: " + oldsrv.Mentions + " => " + newsrv.Mentions + ".")
 				}
 
 				// Update specific configuration.
@@ -62,13 +62,15 @@ func AddNewServers(newcfg *config.Config, cfg *config.Config) {
 				cfg.Servers[i].RestartInt = newsrv.RestartInt
 				cfg.Servers[i].ScanTime = newsrv.ScanTime
 				cfg.Servers[i].ReportOnly = newsrv.ReportOnly
+				cfg.Servers[i].A2STimeout = newsrv.A2STimeout
+				cfg.Servers[i].Mentions = newsrv.Mentions
 			}
 		}
 
 		// If we're not inside of the current configuration, add the server.
 		if toadd {
-			if cfg.DebugLevel > 0 {
-				fmt.Println("[D1] Adding server from update " + newsrv.IP + ":" + strconv.Itoa(newsrv.Port) + " with UID " + newsrv.UID + ". Auto Add => " + strconv.FormatBool(newsrv.ViaAPI) + ". Scan time => " + strconv.Itoa(newsrv.ScanTime) + ". Max Fails => " + strconv.Itoa(newsrv.MaxFails) + ". Max Restarts => " + strconv.Itoa(newsrv.MaxRestarts) + ". Restart Interval => " + strconv.Itoa(newsrv.RestartInt) + ". Enabled => " + strconv.FormatBool(newsrv.Enable) + ".")
+			if cfg.DebugLevel > 1 {
+				fmt.Println("[D2] Adding server from update " + newsrv.IP + ":" + strconv.Itoa(newsrv.Port) + " with UID " + newsrv.UID + ". Name => " + newsrv.Name + ". Auto Add => " + strconv.FormatBool(newsrv.ViaAPI) + ". Scan time => " + strconv.Itoa(newsrv.ScanTime) + ". Max Fails => " + strconv.Itoa(newsrv.MaxFails) + ". Max Restarts => " + strconv.Itoa(newsrv.MaxRestarts) + ". Restart Interval => " + strconv.Itoa(newsrv.RestartInt) + ". Enabled => " + strconv.FormatBool(newsrv.Enable) + ". A2S Timeout => " + strconv.Itoa(newsrv.A2STimeout) + ". Mentions => " + newsrv.Mentions + ".")
 			}
 
 			cfg.Servers = append(cfg.Servers, newsrv)
@@ -79,8 +81,8 @@ func AddNewServers(newcfg *config.Config, cfg *config.Config) {
 func DelOldServers(newcfg *config.Config, cfg *config.Config) {
 	// Loop through all old servers.
 	for i, oldsrv := range cfg.Servers {
-		if cfg.DebugLevel > 2 {
-			fmt.Println("[D3] Looking for " + oldsrv.IP + ":" + strconv.Itoa(oldsrv.Port) + ":" + oldsrv.UID + " (" + strconv.Itoa(i) + ") inside of new configuration.")
+		if cfg.DebugLevel > 3 {
+			fmt.Println("[D4] Looking for " + oldsrv.IP + ":" + strconv.Itoa(oldsrv.Port) + ":" + oldsrv.UID + " (" + strconv.Itoa(i) + ") inside of new configuration.")
 		}
 
 		todel := true
@@ -99,8 +101,8 @@ func DelOldServers(newcfg *config.Config, cfg *config.Config) {
 			nt.Port = newsrv.Port
 			nt.UID = newsrv.UID
 
-			if cfg.DebugLevel > 2 {
-				fmt.Println("[D3] Comparing " + ot.IP + ":" + strconv.Itoa(ot.Port) + ":" + ot.UID + " == " + nt.IP + ":" + strconv.Itoa(nt.Port) + ":" + nt.UID + " (" + strconv.Itoa(j) + ").")
+			if cfg.DebugLevel > 4 {
+				fmt.Println("[D5] Comparing " + ot.IP + ":" + strconv.Itoa(ot.Port) + ":" + ot.UID + " == " + nt.IP + ":" + strconv.Itoa(nt.Port) + ":" + nt.UID + " (" + strconv.Itoa(j) + ").")
 			}
 
 			// Now compare.
@@ -111,8 +113,8 @@ func DelOldServers(newcfg *config.Config, cfg *config.Config) {
 
 		// If we're not inside of the new configuration, delete the server.
 		if todel {
-			if cfg.DebugLevel > 0 {
-				fmt.Println("[D1] Deleting server from update " + oldsrv.IP + ":" + strconv.Itoa(oldsrv.Port) + " with UID " + oldsrv.UID + ".")
+			if cfg.DebugLevel > 1 {
+				fmt.Println("[D2] Deleting server from update " + oldsrv.IP + ":" + strconv.Itoa(oldsrv.Port) + " with UID " + oldsrv.UID + ". Name => " + oldsrv.Name + ".")
 			}
 
 			misc.RemoveIndex(cfg, i)
@@ -130,25 +132,22 @@ func ReloadServers(timer *time.Ticker, cfg *config.Config) {
 			newcfg := config.Config{}
 
 			// Set default values.
-			newcfg.AddServers = false
-			newcfg.DebugLevel = 0
-			newcfg.ReloadTime = 500
+			newcfg.SetDefaults()
 
-			newcfg.DefEnable = true
-			newcfg.DefScanTime = 5
-			newcfg.DefMaxFails = 10
-			newcfg.DefMaxRestarts = 2
-			newcfg.DefRestartInt = 120
-			newcfg.DefReportOnly = false
-
-			success := config.ReadConfig(&newcfg, cfg.ConfLoc)
+			success := newcfg.ReadConfig(cfg.ConfLoc)
 
 			if !success {
 				continue
 			}
 
 			if newcfg.AddServers {
-				pterodactyl.AddServers(&newcfg)
+				cont := pterodactyl.AddServers(&newcfg)
+
+				if !cont {
+					fmt.Println("[ERR] Not updating server list due to error.")
+
+					continue
+				}
 			}
 
 			// Assign new values.
