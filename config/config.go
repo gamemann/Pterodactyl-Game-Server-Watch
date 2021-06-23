@@ -55,7 +55,8 @@ func (cfg *Config) ReadConfig(filename string) bool {
 	file, err := os.Open(filename)
 
 	if err != nil {
-		fmt.Println("Error opening config file.")
+		fmt.Println("[ERR] Cannot open config file.")
+		fmt.Println(err)
 
 		return false
 	}
@@ -67,7 +68,8 @@ func (cfg *Config) ReadConfig(filename string) bool {
 	_, err = file.Read(data)
 
 	if err != nil {
-		fmt.Println("Error reading config file.")
+		fmt.Println("[ERR] Cannot read config file.")
+		fmt.Println(err)
 
 		return false
 	}
@@ -77,7 +79,8 @@ func (cfg *Config) ReadConfig(filename string) bool {
 	file.Close()
 
 	if err != nil {
-		fmt.Println("Error parsing JSON Data.")
+		fmt.Println("[ERR] Cannot parse JSON Data.")
+		fmt.Println(err)
 
 		return false
 	}
