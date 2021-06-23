@@ -56,14 +56,14 @@ func AddNewServers(newcfg *config.Config, cfg *config.Config) {
 				}
 
 				// Update specific configuration.
-				cfg.Servers[i].Enable = newsrv.Enable
-				cfg.Servers[i].MaxFails = newsrv.MaxFails
-				cfg.Servers[i].MaxRestarts = newsrv.MaxRestarts
-				cfg.Servers[i].RestartInt = newsrv.RestartInt
-				cfg.Servers[i].ScanTime = newsrv.ScanTime
-				cfg.Servers[i].ReportOnly = newsrv.ReportOnly
-				cfg.Servers[i].A2STimeout = newsrv.A2STimeout
-				cfg.Servers[i].Mentions = newsrv.Mentions
+				cfg.Servers[j].Enable = newsrv.Enable
+				cfg.Servers[j].MaxFails = newsrv.MaxFails
+				cfg.Servers[j].MaxRestarts = newsrv.MaxRestarts
+				cfg.Servers[j].RestartInt = newsrv.RestartInt
+				cfg.Servers[j].ScanTime = newsrv.ScanTime
+				cfg.Servers[j].ReportOnly = newsrv.ReportOnly
+				cfg.Servers[j].A2STimeout = newsrv.A2STimeout
+				cfg.Servers[j].Mentions = newsrv.Mentions
 			}
 		}
 
