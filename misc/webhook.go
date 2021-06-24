@@ -25,7 +25,7 @@ type SlackWH struct {
 	Text string `json:"text"`
 }
 
-func DiscordWebHook(url string, contents string, username string, avatarurl string, allowmentions AllowMentions, srv config.Server) bool {
+func DiscordWebHook(url string, contents string, username string, avatarurl string, allowmentions AllowMentions, srv *config.Server) bool {
 	var data DiscordWH
 
 	// Build out JSON/form data for Discord web hook.
