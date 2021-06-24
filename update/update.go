@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/config"
-	"github.com/gamemann/Pterodactyl-Game-Server-Watch/misc"
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/pterodactyl"
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/servers"
 )
@@ -117,7 +116,8 @@ func DelOldServers(newcfg *config.Config, cfg *config.Config) {
 				fmt.Println("[D2] Deleting server from update " + oldsrv.IP + ":" + strconv.Itoa(oldsrv.Port) + " with UID " + oldsrv.UID + ". Name => " + oldsrv.Name + ".")
 			}
 
-			misc.RemoveIndex(cfg, i)
+			// Set Delete to true so we'll delete the server, close the connection, etc. on the next scan.
+			cfg.Servers[i].Delete = true
 		}
 	}
 }

@@ -21,6 +21,7 @@ type Server struct {
 	A2STimeout  int    `json:"a2stimeout"`
 	Mentions    string `json:"mentions"`
 	ViaAPI      bool
+	Delete      bool
 }
 
 // Misc options.

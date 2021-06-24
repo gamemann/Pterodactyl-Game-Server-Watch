@@ -9,9 +9,7 @@ import (
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/config"
 )
 
-func HandleMisc(cfg *config.Config, srvidx int, fails int, restarts int) {
-	srv := cfg.Servers[srvidx]
-
+func HandleMisc(cfg *config.Config, srv *config.Server, fails int, restarts int) {
 	// Look for Misc options.
 	if len(cfg.Misc) > 0 {
 		for i, v := range cfg.Misc {

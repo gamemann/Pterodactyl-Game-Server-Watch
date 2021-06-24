@@ -5,7 +5,7 @@ import (
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/misc"
 )
 
-func OnServerDown(cfg *config.Config, srvidx int, fails int, restarts int) {
+func OnServerDown(cfg *config.Config, srv *config.Server, fails int, restarts int) {
 	// Handle Misc options.
-	misc.HandleMisc(cfg, srvidx, fails, restarts)
+	misc.HandleMisc(cfg, srv, fails, restarts)
 }
