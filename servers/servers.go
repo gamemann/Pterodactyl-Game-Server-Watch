@@ -189,6 +189,11 @@ func HandleServers(cfg *config.Config, update bool) {
 
 	// Loop through each container from the config.
 	for i, srv := range cfg.Servers {
+		// If we're not enabled, ignore.
+		if !srv.Enable {
+			continue
+		}
+
 		// Create tuple.
 		var srvt Tuple
 		srvt.IP = srv.IP
