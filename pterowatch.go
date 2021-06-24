@@ -7,7 +7,6 @@ import (
 	"os/signal"
 	"strconv"
 	"syscall"
-	"time"
 
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/config"
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/pterodactyl"
@@ -55,25 +54,6 @@ func main() {
 
 	// Signal.
 	sigc := make(chan os.Signal, 1)
-	signal.Notify(sigc, syscall.SIGINT)
-
-	x := 0
-
-	// Create a loop so the program doesn't exit. Look for signals and if SIGINT, stop the program.
-	for x < 1 {
-		kill := false
-		s := <-sigc
-
-		switch s {
-		case os.Interrupt:
-			kill = true
-		}
-
-		if kill {
-			break
-		}
-
-		// Sleep every second to avoid unnecessary CPU consumption.
-		time.Sleep(time.Duration(1) * time.Second)
-	}
+	signal.Notify(sigc, syscall.SIGINT, syscall.SIGTERM)
+	<-sigc
 }
