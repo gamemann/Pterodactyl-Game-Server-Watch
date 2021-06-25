@@ -47,6 +47,7 @@ func ServerWatch(srv *config.Server, timer *time.Ticker, fails *int, restarts *i
 			if !query.CheckResponse(conn, *srv) {
 				// Increase fail count.
 				*fails++
+
 				if cfg.DebugLevel > 1 {
 					fmt.Println("[D2][" + srv.IP + ":" + strconv.Itoa(srv.Port) + "] Fails => " + strconv.Itoa(*fails))
 				}
