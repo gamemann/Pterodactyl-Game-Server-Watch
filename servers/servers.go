@@ -12,39 +12,7 @@ import (
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/query"
 )
 
-type Tuple struct {
-	IP   string
-	Port int
-	UID  string
-}
-
-type Stats struct {
-	Fails    *int
-	Restarts *int
-	NextScan *int64
-}
-
-type TickerHolder struct {
-	Info      Tuple
-	Ticker    *time.Ticker
-	Conn      *net.UDPConn
-	ScanTime  int
-	Destroyer *chan bool
-	Idx       *int
-	Stats     Stats
-}
-
 var tickers []TickerHolder
-
-func RemoveTicker(t *[]TickerHolder, idx int) {
-	copy((*t)[idx:], (*t)[idx+1:])
-	*t = (*t)[:len(*t)-1]
-}
-
-func RemoveServer(cfg *config.Config, idx int) {
-	copy(cfg.Servers[idx:], cfg.Servers[idx+1:])
-	cfg.Servers = cfg.Servers[:len(cfg.Servers)-1]
-}
 
 // Timer function.
 func ServerWatch(srv *config.Server, timer *time.Ticker, fails *int, restarts *int, nextscan *int64, conn *net.UDPConn, cfg *config.Config, destroy *chan bool) {
@@ -79,6 +47,7 @@ func ServerWatch(srv *config.Server, timer *time.Ticker, fails *int, restarts *i
 			if !query.CheckResponse(conn, *srv) {
 				// Increase fail count.
 				*fails++
+
 				if cfg.DebugLevel > 1 {
 					fmt.Println("[D2][" + srv.IP + ":" + strconv.Itoa(srv.Port) + "] Fails => " + strconv.Itoa(*fails))
 				}

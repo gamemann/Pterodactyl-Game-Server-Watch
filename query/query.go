@@ -20,16 +20,20 @@ func CreateConnection(host string, port int) (*net.UDPConn, error) {
 	// Combine host and port.
 	fullHost := host + ":" + strconv.Itoa(port)
 
+	UDPAddr, err := net.ResolveUDPAddr("udp", fullHost)
+
+	if err != nil {
+		return UDPC, err
+	}
+
 	// Attempt to open a UDP connection.
-	conn, err := net.Dial("udp", fullHost)
+	UDPC, err = net.DialUDP("udp", nil, UDPAddr)
 
 	if err != nil {
 		fmt.Println(err)
 
 		return UDPC, errors.New("NoConnection")
 	}
-
-	UDPC, _ = conn.(*net.UDPConn)
 
 	return UDPC, nil
 }
