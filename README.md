@@ -130,7 +130,7 @@ Please look at the following data items:
 The following strings are replaced inside of the `contents` string before the web hook submission.
 
 * `{IP}` => The server's IP.
-* `{Port}` => The server's port.
+* `{PORT}` => The server's port.
 * `{FAILS}` => The server's current fail count.
 * `{RESTARTS}` => The amount of times the server has been restarted since down.
 * `{MAXFAILS}` => The server's configured max fails.
