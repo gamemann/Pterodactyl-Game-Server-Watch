@@ -1,15 +1,12 @@
 package pterodactyl
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/pkg/config"
+	pteroapi "github.com/gamemann/Rust-Auto-Wipe/pkg/pterodactyl"
 )
 
 // Attributes struct from /api/client/servers/xxxx/resources.
@@ -31,36 +28,7 @@ func AddServers(cfg *config.Config) bool {
 	done := false
 
 	for done != true {
-		// Build endpoint.
-		urlstr := cfg.APIURL + "/api/application/servers?page=" + strconv.Itoa(pagecount) + "&include=allocations,variables"
-
-		// Setup HTTP GET request.
-		client := &http.Client{Timeout: time.Second * 5}
-		req, err := http.NewRequest("GET", urlstr, nil)
-
-		if err != nil {
-			fmt.Println(err)
-
-			return false
-		}
-
-		// Set Application API token.
-		req.Header.Set("Authorization", "Bearer "+cfg.AppToken)
-
-		// Accept only JSON.
-		req.Header.Set("Accept", "application/json")
-
-		// Perform HTTP request and check for errors.
-		resp, err := client.Do(req)
-
-		if err != nil {
-			fmt.Println(err)
-
-			return false
-		}
-
-		// Read body.
-		body, err := ioutil.ReadAll(resp.Body)
+		body, _, err := pteroapi.SendAPIRequest(cfg.APIURL, cfg.AppToken, "GET", "application/servers?page="+strconv.Itoa(pagecount)+"&include=allocations,variables", nil)
 
 		if err != nil {
 			fmt.Println(err)
@@ -84,14 +52,14 @@ func AddServers(cfg *config.Config) bool {
 		if dataobj.(map[string]interface{})["object"] == nil {
 			fmt.Println("[ERR] 'object' item not found when listing all servers.")
 
+			fmt.Println(string(body))
+
 			return false
 		}
 
 		// Retrieve max page count and total count.
 		maxpages = int(dataobj.(map[string]interface{})["meta"].(map[string]interface{})["pagination"].(map[string]interface{})["total_pages"].(float64))
 		total = int(dataobj.(map[string]interface{})["meta"].(map[string]interface{})["pagination"].(map[string]interface{})["total"].(float64))
-
-		resp.Body.Close()
 
 		// Loop through each data item (server).
 		for _, j := range dataobj.(map[string]interface{})["data"].([]interface{}) {
@@ -117,6 +85,12 @@ func AddServers(cfg *config.Config) bool {
 				sta.ReportOnly = cfg.DefReportOnly
 				sta.A2STimeout = cfg.DefA2STimeout
 				sta.Mentions = cfg.DefMentions
+
+				if attr["relationships"] == nil {
+					fmt.Println("[ERR] Server has invalid relationships.")
+
+					continue
+				}
 
 				// Retrieve default IP/port.
 				for _, i := range attr["relationships"].(map[string]interface{})["allocations"].(map[string]interface{})["data"].([]interface{}) {
@@ -243,36 +217,7 @@ func AddServers(cfg *config.Config) bool {
 // Checks the status of a Pterodactyl server. Returns true if on and false if off.
 // DOES NOT INCLUDE IN "STARTING" MODE.
 func CheckStatus(cfg *config.Config, uid string) bool {
-	// Build endpoint.
-	urlstr := cfg.APIURL + "/" + "api/client/servers/" + uid + "/resources"
-
-	// Setup HTTP GET request.
-	client := &http.Client{Timeout: time.Second * 5}
-	req, _ := http.NewRequest("GET", urlstr, nil)
-
-	// Set authorization header.
-	req.Header.Set("Authorization", "Bearer "+cfg.Token)
-
-	// Set data to JSON.
-	req.Header.Set("Content-Type", "application/json")
-
-	// Accept JSON.
-	req.Header.Set("Accept", "application/json")
-
-	// Perform HTTP request and check for errors.
-	resp, err := client.Do(req)
-
-	if err != nil {
-		fmt.Println(err)
-
-		return false
-	}
-
-	// Close body at the end.
-	defer resp.Body.Close()
-
-	// Read body.
-	body, err := ioutil.ReadAll(resp.Body)
+	body, _, err := pteroapi.SendAPIRequest(cfg.APIURL, cfg.AppToken, "GET", "client/servers/"+uid+"/resources", nil)
 
 	if err != nil {
 		fmt.Println(err)
@@ -296,65 +241,33 @@ func CheckStatus(cfg *config.Config, uid string) bool {
 }
 
 // Kills the specified server.
-func KillServer(cfg *config.Config, uid string) {
-	// Build endpoint.
-	urlstr := cfg.APIURL + "/" + "api/client/servers/" + uid + "/" + "power"
+func KillServer(cfg *config.Config, uid string) bool {
+	form_data := make(map[string]interface{})
+	form_data["signal"] = "kill"
 
-	// Setup form data.
-	var formdata = []byte(`{"signal": "kill"}`)
-
-	// Setup HTTP GET request.
-	client := &http.Client{Timeout: time.Second * 5}
-	req, _ := http.NewRequest("POST", urlstr, bytes.NewBuffer(formdata))
-
-	// Set authorization header.
-	req.Header.Set("Authorization", "Bearer "+cfg.Token)
-
-	// Set data to JSON.
-	req.Header.Set("Content-Type", "application/json")
-
-	// Accept JSON.
-	req.Header.Set("Accept", "application/json")
-
-	// Perform HTTP request and check for errors.
-	resp, err := client.Do(req)
+	_, _, err := pteroapi.SendAPIRequest(cfg.APIURL, cfg.AppToken, "POST", "client/servers/"+uid+"/"+"power", form_data)
 
 	if err != nil {
 		fmt.Println(err)
+
+		return false
 	}
 
-	// Close body at the end.
-	resp.Body.Close()
+	return true
 }
 
 // Starts the specified server.
-func StartServer(cfg *config.Config, uid string) {
-	// Build endpoint.
-	urlstr := cfg.APIURL + "/" + "api/client/servers/" + uid + "/" + "power"
+func StartServer(cfg *config.Config, uid string) bool {
+	form_data := make(map[string]interface{})
+	form_data["signal"] = "start"
 
-	// Setup form data.
-	var formdata = []byte(`{"signal": "start"}`)
-
-	// Setup HTTP GET request.
-	client := &http.Client{Timeout: time.Second * 5}
-	req, _ := http.NewRequest("POST", urlstr, bytes.NewBuffer(formdata))
-
-	// Set authorization header.
-	req.Header.Set("Authorization", "Bearer "+cfg.Token)
-
-	// Set data to JSON.
-	req.Header.Set("Content-Type", "application/json")
-
-	// Accept JSON.
-	req.Header.Set("Accept", "application/json")
-
-	// Perform HTTP request and check for errors.
-	resp, err := client.Do(req)
+	_, _, err := pteroapi.SendAPIRequest(cfg.APIURL, cfg.AppToken, "POST", "client/servers/"+uid+"/"+"power", form_data)
 
 	if err != nil {
 		fmt.Println(err)
+
+		return false
 	}
 
-	// Close body at the end.
-	resp.Body.Close()
+	return true
 }

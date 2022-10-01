@@ -53,7 +53,7 @@ func main() {
 
 	// Level 1 debug.
 	if cfg.DebugLevel > 0 {
-		fmt.Println("[D1] Found config with API URL => " + cfg.APIURL + ". Token => " + cfg.Token + ". Auto Add Servers => " + strconv.FormatBool(cfg.AddServers) + ". Debug level => " + strconv.Itoa(cfg.DebugLevel) + ". Reload time => " + strconv.Itoa(cfg.ReloadTime))
+		fmt.Println("[D1] Found config with API URL => " + cfg.APIURL + ". Token => " + cfg.Token + ". App Token => " + cfg.AppToken + ". Auto Add Servers => " + strconv.FormatBool(cfg.AddServers) + ". Debug level => " + strconv.Itoa(cfg.DebugLevel) + ". Reload time => " + strconv.Itoa(cfg.ReloadTime))
 	}
 
 	// Level 2 debug.
