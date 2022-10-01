@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gamemann/Pterodactyl-Game-Server-Watch/config"
-	"github.com/gamemann/Pterodactyl-Game-Server-Watch/events"
-	"github.com/gamemann/Pterodactyl-Game-Server-Watch/pterodactyl"
-	"github.com/gamemann/Pterodactyl-Game-Server-Watch/query"
+	"github.com/gamemann/Pterodactyl-Game-Server-Watch/internal/events"
+	"github.com/gamemann/Pterodactyl-Game-Server-Watch/internal/pterodactyl"
+	"github.com/gamemann/Pterodactyl-Game-Server-Watch/internal/query"
+	"github.com/gamemann/Pterodactyl-Game-Server-Watch/pkg/config"
 )
 
 var tickers []TickerHolder

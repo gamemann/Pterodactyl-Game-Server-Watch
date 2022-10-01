@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gamemann/Pterodactyl-Game-Server-Watch/config"
+	"github.com/gamemann/Pterodactyl-Game-Server-Watch/pkg/config"
 )
 
 func FormatContents(app string, formatstr *string, fails int, restarts int, srv *config.Server, mentionstr string) {

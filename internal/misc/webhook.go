@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gamemann/Pterodactyl-Game-Server-Watch/config"
+	"github.com/gamemann/Pterodactyl-Game-Server-Watch/pkg/config"
 )
 
 type AllowMentions struct {

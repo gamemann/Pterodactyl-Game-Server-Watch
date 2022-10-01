@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gamemann/Pterodactyl-Game-Server-Watch/config"
+	"github.com/gamemann/Pterodactyl-Game-Server-Watch/pkg/config"
 )
 
 // Attributes struct from /api/client/servers/xxxx/resources.
