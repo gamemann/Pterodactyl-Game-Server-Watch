@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"syscall"
 
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/internal/pterodactyl"
@@ -26,7 +27,29 @@ func main() {
 	cfg.SetDefaults()
 
 	// Attempt to read config.
-	cfg.ReadConfig(*configFile)
+	err := cfg.ReadConfig(*configFile)
+
+	// If we have no config, create the file with the defaults.
+	if err != nil {
+		// If there's an error and it contains "no such file", try to create the file with defaults.
+		if strings.Contains(err.Error(), "no such file") {
+			err = cfg.WriteDefaultsToFile(*configFile)
+
+			if err != nil {
+				fmt.Println("Failed to open config file and cannot create file.")
+				fmt.Println(err)
+
+				os.Exit(1)
+			}
+		}
+
+		fmt.Println("WARNING - No config file found. Created config file at " + *configFile + " with defaults.")
+	} else {
+		// Check if we want to automatically add servers.
+		if cfg.AddServers {
+			pterodactyl.AddServers(&cfg)
+		}
+	}
 
 	// Level 1 debug.
 	if cfg.DebugLevel > 0 {
@@ -36,11 +59,6 @@ func main() {
 	// Level 2 debug.
 	if cfg.DebugLevel > 1 {
 		fmt.Println("[D2] Config default server values. Enable => " + strconv.FormatBool(cfg.DefEnable) + ". Scan time => " + strconv.Itoa(cfg.DefScanTime) + ". Max Fails => " + strconv.Itoa(cfg.DefMaxFails) + ". Max Restarts => " + strconv.Itoa(cfg.DefMaxRestarts) + ". Restart Interval => " + strconv.Itoa(cfg.DefRestartInt) + ". Report Only => " + strconv.FormatBool(cfg.DefReportOnly) + ". A2S Timeout => " + strconv.Itoa(cfg.DefA2STimeout) + ". Mentions => " + cfg.DefMentions + ".")
-	}
-
-	// Check if we want to automatically add servers.
-	if cfg.AddServers {
-		pterodactyl.AddServers(&cfg)
 	}
 
 	// Handle all servers (create timers, etc.).

@@ -134,9 +134,11 @@ func ReloadServers(timer *time.Ticker, cfg *config.Config) {
 			// Set default values.
 			newcfg.SetDefaults()
 
-			success := newcfg.ReadConfig(cfg.ConfLoc)
+			err := newcfg.ReadConfig(cfg.ConfLoc)
 
-			if !success {
+			if err != nil {
+				fmt.Println(err)
+
 				continue
 			}
 
