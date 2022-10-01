@@ -187,11 +187,31 @@ You may find other config examples in the [tests/](https://github.com/gamemann/P
 ## Building
 You may use `git` and `go build` to build this project and produce a binary. I'd suggest cloning this to `$GOPATH` so there aren't problems with linking modules. For example:
 
-```
-cd <Path To One $GOPATH>
+```bash
+# Clone repository.
 git clone https://github.com/gamemann/Pterodactyl-Game-Server-Watch.git
-cd Pterodactyl-Game-Server-Watch
-go build -o pterowatch
+
+# Change directory to respository.
+cd Pterodactyl-Game-Server-Watch/
+
+# Build, which should automatically download needed files.
+go build -o pgsw
+```
+
+## Using Makefile To Build And Install
+You may use `make` and `sudo make install` to build and install the project's executable to `/usr/bin` (in `$PATH` by default normally). This also copies a `Systemd` service called `pgsw.service`.
+
+See below for examples.
+
+```bash
+# Build project into `./pgsw` executable.
+make
+
+# Install Systemd service and file to /usr/bin/.
+sudo make install
+
+# Enable and start service (will start on bootup).
+sudo systemctl enable --now pgsw
 ```
 
 ## Credits
