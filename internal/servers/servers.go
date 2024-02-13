@@ -2,7 +2,6 @@ package servers
 
 import (
 	"fmt"
-	"net"
 	"strconv"
 	"time"
 
@@ -10,17 +9,20 @@ import (
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/internal/pterodactyl"
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/internal/query"
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/pkg/config"
+
+	"github.com/gamemann/Pterodactyl-Game-Server-Watch/internal/rcon"
 )
 
 var tickers []TickerHolder
 
 // Timer function.
-func ServerWatch(srv *config.Server, timer *time.Ticker, fails *int, restarts *int, nextscan *int64, conn *net.UDPConn, cfg *config.Config, destroy *chan bool) {
+func ServerWatch(srv *config.Server, timer *time.Ticker, fails *int, restarts *int, nextscan *int64, conn *rcon.RemoteConsole, cfg *config.Config, destroy *chan bool) {
 	for {
 		select {
 		case <-timer.C:
 			// If the UDP connection or server is nil, break the timer.
-			if conn == nil || srv == nil {
+			// if conn == nil || srv == nil {
+			if srv == nil {
 				*destroy <- true
 
 				break
@@ -31,20 +33,33 @@ func ServerWatch(srv *config.Server, timer *time.Ticker, fails *int, restarts *i
 				continue
 			}
 
+			// Let's create the connection now.
+			conn, err := query.CreateConnection(srv.IP, srv.Port, srv)
+
+			if err != nil {
+				fmt.Println("Error creating UDP connection for " + srv.IP + ":" + strconv.Itoa(srv.Port) + " ( " + srv.Name + ").")
+				fmt.Println(err)
+
+				*destroy <- true
+
+				break
+			}
+			// If the UDP connection or server is nil, break the timer.
+
 			// Check if container status is 'on'.
 			if !pterodactyl.CheckStatus(cfg, srv.UID) {
 				continue
 			}
 
 			// Send A2S_INFO request.
-			query.SendRequest(conn)
+			reqId, err := query.SendRequest(conn)
 
 			if cfg.DebugLevel > 2 {
-				fmt.Println("[D3][" + srv.IP + ":" + strconv.Itoa(srv.Port) + "] A2S_INFO sent (" + srv.Name + ").")
+				fmt.Println("[D3][" + srv.IP + ":" + strconv.Itoa(srv.Port) + "] RCON sent (" + srv.Name + ").")
 			}
 
 			// Check for response. If no response, increase fail count. Otherwise, reset fail count to 0.
-			if !query.CheckResponse(conn, *srv) {
+			if !query.CheckResponse(conn, reqId, *srv, cfg) {
 				// Increase fail count.
 				*fails++
 
@@ -54,12 +69,25 @@ func ServerWatch(srv *config.Server, timer *time.Ticker, fails *int, restarts *i
 
 				// Check to see if we want to restart the server.
 				if *fails >= srv.MaxFails && *restarts < srv.MaxRestarts && *nextscan < time.Now().Unix() {
+					if cfg.DebugLevel > 1 {
+						fmt.Println("[D2]["+srv.IP+":"+strconv.Itoa(srv.Port)+"] kill + start", srv.ReportOnly)
+					}
+
 					// Check if we want to restart the container.
 					if !srv.ReportOnly {
 						// Attempt to kill container.
+						pterodactyl.StopServer(cfg, srv.UID)
+
+						time.Sleep(10 * time.Second)
+
 						pterodactyl.KillServer(cfg, srv.UID)
 
 						// Now attempt to start it again.
+						if cfg.DebugLevel > 1 {
+							fmt.Println("[D2]["+srv.IP+":"+strconv.Itoa(srv.Port)+"] between kill + start", srv.ReportOnly)
+						}
+						//						time.Sleep(5 * time.Second)
+
 						pterodactyl.StartServer(cfg, srv.UID)
 					}
 
@@ -83,6 +111,7 @@ func ServerWatch(srv *config.Server, timer *time.Ticker, fails *int, restarts *i
 
 					events.OnServerDown(cfg, srv, *fails, *restarts)
 				}
+
 			} else {
 				// Reset everything.
 				*fails = 0
@@ -193,14 +222,14 @@ func HandleServers(cfg *config.Config, update bool) {
 		}
 
 		// Let's create the connection now.
-		conn, err := query.CreateConnection(srv.IP, srv.Port)
+		// conn, err := query.CreateConnection(srv.IP, srv.Port, srv)
 
-		if err != nil {
-			fmt.Println("Error creating UDP connection for " + srv.IP + ":" + strconv.Itoa(srv.Port) + " ( " + srv.Name + ").")
-			fmt.Println(err)
+		// if err != nil {
+		// 	fmt.Println("Error creating UDP connection for " + srv.IP + ":" + strconv.Itoa(srv.Port) + " ( " + srv.Name + ").")
+		// 	fmt.Println(err)
 
-			continue
-		}
+		// 	continue
+		// }
 
 		if cfg.DebugLevel > 3 {
 			fmt.Println("[D4] Creating timer for " + srv.IP + ":" + strconv.Itoa(srv.Port) + ":" + srv.UID + " (" + srv.Name + ").")
@@ -211,13 +240,13 @@ func HandleServers(cfg *config.Config, update bool) {
 
 		// Create repeating timer.
 		ticker := time.NewTicker(time.Duration(stime) * time.Second)
-		go ServerWatch(&cfg.Servers[i], ticker, &fails, &restarts, &nextscan, conn, cfg, &destroyer)
+		go ServerWatch(&cfg.Servers[i], ticker, &fails, &restarts, &nextscan, nil, cfg, &destroyer)
 
 		// Add ticker to global list.
 		var newticker TickerHolder
 		newticker.Info = srvt
 		newticker.Ticker = ticker
-		newticker.Conn = conn
+		// newticker.Conn = conn
 		newticker.ScanTime = stime
 		newticker.Destroyer = &destroyer
 		newticker.Stats.Fails = &fails

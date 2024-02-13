@@ -231,6 +231,10 @@ func CheckStatus(cfg *config.Config, uid string) bool {
 	// Parse JSON.
 	json.Unmarshal([]byte(string(body)), &util)
 
+	if cfg.DebugLevel > 3 {
+		fmt.Println("[D6] CheckStatus ", string(body))
+	}
+
 	// Check if the server's state isn't on. If not, return false.
 	if util.Attributes.State != "running" {
 		return false
@@ -244,6 +248,22 @@ func CheckStatus(cfg *config.Config, uid string) bool {
 func KillServer(cfg *config.Config, uid string) bool {
 	form_data := make(map[string]interface{})
 	form_data["signal"] = "kill"
+
+	_, _, err := pteroapi.SendAPIRequest(cfg.APIURL, cfg.AppToken, "POST", "client/servers/"+uid+"/"+"power", form_data)
+
+	if err != nil {
+		fmt.Println(err)
+
+		return false
+	}
+
+	return true
+}
+
+// Stops the specified server.
+func StopServer(cfg *config.Config, uid string) bool {
+	form_data := make(map[string]interface{})
+	form_data["signal"] = "stop"
 
 	_, _, err := pteroapi.SendAPIRequest(cfg.APIURL, cfg.AppToken, "POST", "client/servers/"+uid+"/"+"power", form_data)
 

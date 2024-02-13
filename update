@@ -1,0 +1,2 @@
+make build ; systemctl stop pgsw.service ; make install ; systemctl start pgsw.service
+
