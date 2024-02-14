@@ -84,6 +84,7 @@ func AddServers(cfg *config.Config) bool {
 				sta.RestartInt = cfg.DefRestartInt
 				sta.ReportOnly = cfg.DefReportOnly
 				sta.A2STimeout = cfg.DefA2STimeout
+				sta.RconPassword = cfg.DefRconPassword
 				sta.Mentions = cfg.DefMentions
 
 				if attr["relationships"] == nil {
@@ -160,6 +161,11 @@ func AddServers(cfg *config.Config) bool {
 						// Check for A2S_INFO timeout override.
 						if vari["env_variable"].(string) == "PTEROWATCH_A2STIMEOUT" {
 							sta.A2STimeout, _ = strconv.Atoi(val)
+						}
+
+						// Check for RCON_PASSWORD override.
+						if vari["env_variable"].(string) == "PTEROWATCH_RCONPASSWORD" {
+							sta.RconPassword = val
 						}
 
 						// Check for mentions override.

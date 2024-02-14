@@ -11,8 +11,6 @@ import (
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/pkg/config"
 
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/internal/rcon"
-
-	"github.com/gookit/goutil/dump"
 )
 
 /*
@@ -50,8 +48,8 @@ func Execute(hostPort string, password string, command ...string) (*string, erro
 func CreateConnection(hostname string, port int, srv *config.Server) (*rcon.RemoteConsole, error) {
 	request_timeout := srv.A2STimeout
 	password := srv.RconPassword
-	println("password")
-	dump.P(srv)
+
+	// dump.P(srv)
 
 	hostPortArgs := []string{}
 	hostPortArgs = append(hostPortArgs, hostname)
@@ -71,8 +69,11 @@ func CreateConnection(hostname string, port int, srv *config.Server) (*rcon.Remo
 
 }
 
-func CloseConnect(conn *rcon.RemoteConsole) {
-	conn.Close()
+func CloseConnect(conn *rcon.RemoteConsole) error {
+	if conn != nil {
+		return conn.Close()
+	}
+	return nil
 }
 
 // // The A2S_INFO request.
@@ -139,7 +140,7 @@ func CheckResponse(conn *rcon.RemoteConsole, reqId int, srv config.Server, cfg *
 
 	resp, respReqId, err := conn.Read()
 
-	println(conn, respReqId, err.Error())
+	// println(conn, respReqId, err.Error())
 
 	if err != nil {
 		if err == io.EOF {
@@ -155,7 +156,7 @@ func CheckResponse(conn *rcon.RemoteConsole, reqId int, srv config.Server, cfg *
 	}
 
 	if cfg.DebugLevel > 3 {
-		fmt.Println("[D4][" + srv.IP + ":" + strconv.Itoa(srv.Port) + "] RCON received (" + resp + ").")
+		fmt.Println("[D4][" + srv.IP + ":" + strconv.Itoa(srv.Port) + "] RCON received (" + strings.TrimSpace(resp) + ").")
 	}
 
 	if err != nil {
