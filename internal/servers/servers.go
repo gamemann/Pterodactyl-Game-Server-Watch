@@ -56,10 +56,10 @@ func ServerWatch(srv *config.Server, timer *time.Ticker, fails *int, restarts *i
 				}
 
 				// Send A2S_INFO request.
-				reqId, _ = query.SendRequest(conn)
+				reqId, err = query.SendRequest(conn)
 
 				if cfg.DebugLevel > 2 {
-					fmt.Println("[D3][" + srv.IP + ":" + strconv.Itoa(srv.Port) + "] RCON sent (" + srv.Name + ").")
+					fmt.Println("[D3]["+srv.IP+":"+strconv.Itoa(srv.Port)+"] RCON sent ("+srv.Name+").", err)
 				}
 
 			} // connection OK
