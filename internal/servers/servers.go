@@ -40,7 +40,7 @@ func ServerWatch(srv *config.Server, timer *time.Ticker, fails *int, restarts *i
 
 			if err != nil {
 
-				fmt.Println("Error creating UDP connection for " + srv.IP + ":" + strconv.Itoa(srv.Port) + " ( " + srv.Name + ").")
+				fmt.Println("Error creating RCON connection for " + srv.IP + ":" + strconv.Itoa(srv.Port) + " ( " + srv.Name + ").")
 				fmt.Println(err)
 
 				handleFail(srv, timer, fails, restarts, nextscan, conn, cfg, destroy)
@@ -48,7 +48,7 @@ func ServerWatch(srv *config.Server, timer *time.Ticker, fails *int, restarts *i
 				continue
 			} else { // connection OK
 
-				// If the UDP connection or server is nil, break the timer.
+				// If the RCON connection or server is nil, break the timer.
 
 				// Check if container status is 'on'.
 				if !pterodactyl.CheckStatus(cfg, srv.UID) {
