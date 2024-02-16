@@ -59,7 +59,11 @@ func ServerWatch(srv *config.Server, timer *time.Ticker, fails *int, restarts *i
 				reqId, err = query.SendRequest(conn)
 
 				if cfg.DebugLevel > 2 {
-					fmt.Println("[D3]["+srv.IP+":"+strconv.Itoa(srv.Port)+"] RCON sent ("+srv.Name+").", err)
+					if err != nil {
+						fmt.Println("[D3][" + srv.IP + ":" + strconv.Itoa(srv.Port) + "] RCON sent (" + srv.Name + "). Error: " + err.Error() + ".")
+					} else {
+						fmt.Println("[D3][" + srv.IP + ":" + strconv.Itoa(srv.Port) + "] RCON sent (" + srv.Name + ").")
+					}
 				}
 
 			} // connection OK
