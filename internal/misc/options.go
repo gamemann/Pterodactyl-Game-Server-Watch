@@ -23,7 +23,9 @@ func HandleMisc(cfg *config.Config, srv *config.Server, fails int, restarts int)
 				// Set defaults.
 				contentpre := "**SERVER DOWN**\n- **Name** => {NAME}\n- **IP** => {IP}:{PORT}\n- **Fail Count** => {FAILS}/{MAXFAILS}\n- **Restart Count** => {RESTARTS}/{MAXRESTARTS}\n\nScanning again in *{RESTARTINT}* seconds..."
 				username := "Pterowatch"
+				password := ""
 				avatarurl := ""
+				topic := ""
 				allowedmentions := AllowMentions{
 					Roles: false,
 					Users: false,
@@ -54,9 +56,19 @@ func HandleMisc(cfg *config.Config, srv *config.Server, fails int, restarts int)
 					username = v.Data.(map[string]interface{})["username"].(string)
 				}
 
+				// Look for password override.
+				if v.Data.(map[string]interface{})["password"] != nil {
+					password = v.Data.(map[string]interface{})["password"].(string)
+				}
+
 				// Look for avatar URL override.
 				if v.Data.(map[string]interface{})["avatarurl"] != nil {
 					avatarurl = v.Data.(map[string]interface{})["avatarurl"].(string)
+				}
+
+				// Look for Ntfy Topic override.
+				if v.Data.(map[string]interface{})["topic"] != nil {
+					topic = v.Data.(map[string]interface{})["topic"].(string)
 				}
 
 				// Look for allowed mentions override.
@@ -170,11 +182,13 @@ func HandleMisc(cfg *config.Config, srv *config.Server, fails int, restarts int)
 
 				// Level 3 debug.
 				if cfg.DebugLevel > 2 {
-					fmt.Println("[D3] Loaded web hook with App => " + app + ". URL => " + url + ". Contents => " + contents + ". Username => " + username + ". Avatar URL => " + avatarurl + ". Mentions => Roles:" + strconv.FormatBool(allowedmentions.Roles) + "; Users:" + strconv.FormatBool(allowedmentions.Users) + ".")
+					fmt.Println("[D3] Loaded web hook with App => " + app + ". URL => " + url + ". Contents => " + contents + ". Username => " + username + ". Avatar URL => " + avatarurl + ". Mentions => Roles:" + strconv.FormatBool(allowedmentions.Roles) + "; Users:" + strconv.FormatBool(allowedmentions.Users) + ". Topic:" + topic + ".")
 				}
 
 				// Submit web hook.
-				if app == "slack" {
+				if app == "ntfy" {
+					NtfyWebHook(url, contents, topic, username, password)
+				} else if app == "slack" {
 					SlackWebHook(url, contents)
 				} else {
 					DiscordWebHook(url, contents, username, avatarurl, allowedmentions, srv)

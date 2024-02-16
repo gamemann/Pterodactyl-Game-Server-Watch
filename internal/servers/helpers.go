@@ -1,9 +1,9 @@
 package servers
 
 import (
-	"net"
 	"time"
 
+	"github.com/gamemann/Pterodactyl-Game-Server-Watch/internal/rcon"
 	"github.com/gamemann/Pterodactyl-Game-Server-Watch/pkg/config"
 )
 
@@ -22,7 +22,7 @@ type Stats struct {
 type TickerHolder struct {
 	Info      Tuple
 	Ticker    *time.Ticker
-	Conn      *net.UDPConn
+	Conn      *rcon.RemoteConsole
 	ScanTime  int
 	Destroyer *chan bool
 	Idx       *int

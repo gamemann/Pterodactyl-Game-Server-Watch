@@ -62,6 +62,7 @@ func AddNewServers(newcfg *config.Config, cfg *config.Config) {
 				cfg.Servers[j].ScanTime = newsrv.ScanTime
 				cfg.Servers[j].ReportOnly = newsrv.ReportOnly
 				cfg.Servers[j].A2STimeout = newsrv.A2STimeout
+				cfg.Servers[j].RconPassword = newsrv.RconPassword
 				cfg.Servers[j].Mentions = newsrv.Mentions
 			}
 		}
@@ -69,7 +70,7 @@ func AddNewServers(newcfg *config.Config, cfg *config.Config) {
 		// If we're not inside of the current configuration, add the server.
 		if toadd {
 			if cfg.DebugLevel > 1 {
-				fmt.Println("[D2] Adding server from update " + newsrv.IP + ":" + strconv.Itoa(newsrv.Port) + " with UID " + newsrv.UID + ". Name => " + newsrv.Name + ". Auto Add => " + strconv.FormatBool(newsrv.ViaAPI) + ". Scan time => " + strconv.Itoa(newsrv.ScanTime) + ". Max Fails => " + strconv.Itoa(newsrv.MaxFails) + ". Max Restarts => " + strconv.Itoa(newsrv.MaxRestarts) + ". Restart Interval => " + strconv.Itoa(newsrv.RestartInt) + ". Enabled => " + strconv.FormatBool(newsrv.Enable) + ". A2S Timeout => " + strconv.Itoa(newsrv.A2STimeout) + ". Mentions => " + newsrv.Mentions + ".")
+				fmt.Println("[D2] Adding server from update " + newsrv.IP + ":" + strconv.Itoa(newsrv.Port) + " with UID " + newsrv.UID + ". Name => " + newsrv.Name + ". Auto Add => " + strconv.FormatBool(newsrv.ViaAPI) + ". Scan time => " + strconv.Itoa(newsrv.ScanTime) + ". Max Fails => " + strconv.Itoa(newsrv.MaxFails) + ". Max Restarts => " + strconv.Itoa(newsrv.MaxRestarts) + ". Restart Interval => " + strconv.Itoa(newsrv.RestartInt) + ". Enabled => " + strconv.FormatBool(newsrv.Enable) + ". A2S Timeout => " + strconv.Itoa(newsrv.A2STimeout) + ". RCON Password => " + newsrv.RconPassword + ". Mentions => " + newsrv.Mentions + ".")
 			}
 
 			cfg.Servers = append(cfg.Servers, newsrv)
