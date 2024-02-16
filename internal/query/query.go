@@ -70,10 +70,8 @@ func CheckResponse(conn *rcon.RemoteConsole, reqId int, srv config.Server, cfg *
 		return false
 	}
 
-	println(reqId, respReqId, resp)
-
 	if reqId != respReqId {
-		_, _ = fmt.Fprintln(os.Stdout, "Weird. This response is for another request.")
+		_, _ = fmt.Fprintln(os.Stdout, "Weird. This response is for another request.", reqId, respReqId, strings.TrimSpace(resp))
 	}
 
 	if cfg.DebugLevel > 3 {
